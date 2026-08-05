@@ -2,43 +2,92 @@ import {
     View,
     Text,
     StyleSheet,
-    TouchableWithoutFeedback,
-    Keyboard,
     ScrollView,
-    KeyboardAvoidingView,
-    Platform
 } from "react-native"
 import { InputText } from "@/components/input/InputText"
+import { ButtonComponent } from "@/components/Button"
+import { Link } from "expo-router"
+import { z } from "zod"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import { ScreenWrapper } from "@/components/ScreenWrapper"
+
+const loginSchema = z.object({
+    email: z.email('E-mail inválido').min(1, 'Preencher campo'),
+    senha: z.string({error: "Preencher campo"}).min(1, 'Preencher campo')
+});
+
+type loginFormData = z.infer<typeof loginSchema>;
 
 export default function Index(){
+    const {
+        control,
+        clearErrors,
+        handleSubmit,
+        formState: {errors}
+    } = useForm<loginFormData>({
+        resolver: zodResolver(loginSchema),
+        mode: "onSubmit",
+        reValidateMode: "onSubmit"
+    })
+
+    function handleSignIn(data: loginFormData) {
+        // Alert.alert("Entrar", "Função de entrar acionada")
+        console.log(data)
+    }
+
     return(
-    <KeyboardAvoidingView
-    style={{ flex: 1 }}
-    behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
-    keyboardVerticalOffset={Platform.OS == 'ios' ? 64 : 0}
-    >
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-            <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
+    <ScreenWrapper>
 
-                <View style={style.viewNormal}>
-                <Text style={style.title}>Eae</Text>
+        <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
 
-                    <View style={style.formularioLogin}>
-                        <InputText placeholder="E-mail" keyboardType="email-address"/>
-                        <InputText placeholder="Senha" secureTextEntry/>
+            <View style={style.viewNormal}>
+            <Text style={style.title}>Projeto de organização financeira</Text>
+
+                <View style={style.formularioLogin}>
+                    <InputText
+                    control={control}
+                    name="email"
+                    clearErrors={clearErrors}
+                    placeholder="E-mail"
+                    autoCapitalize="none"
+                    keyboardType="email-address"
+                    error={errors.email?.message}
+                    />
+
+                    <InputText
+                    control={control}
+                    name="senha"
+                    clearErrors={clearErrors}
+                    placeholder="Senha"
+                    autoCapitalize="none"
+                    secureTextEntry
+                    error={errors.senha?.message}
+                    />
+                    
+                    <View style={{ gap: 15 }}>
+                        <ButtonComponent
+                        label="Login"
+                        onPress={handleSubmit(handleSignIn)}
+                        />
+
+                        <Text style={style.textCadastro}>
+                            Não possui cadastro? {'\n'} <Link href="/auth/signup" style={style.linkCadastro}>Registre-se aqui</Link>
+                        </Text>
                     </View>
-
                 </View>
-                
-            </ScrollView>
-        </TouchableWithoutFeedback>
-    </KeyboardAvoidingView>
+
+            </View>
+            
+        </ScrollView>
+    </ScreenWrapper>
     )
 }
 
 
 const style = StyleSheet.create({
     viewNormal: {
+        flex: 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: "#FDFDFD",
@@ -47,10 +96,22 @@ const style = StyleSheet.create({
     },
     formularioLogin: {
         // backgroundColor: "#789895",
-        gap: 15
+        width: 200,
+        gap: 30
     },
+
+
     title: {
         fontSize:18,
         fontWeight: 'bold'
+    },
+    textCadastro: {
+        textAlign: "center",
+        fontSize: 14,
+        lineHeight: 22
+    },
+    linkCadastro: {
+        color: "#3e5de9",
+        fontWeight: 700
     }
 })
