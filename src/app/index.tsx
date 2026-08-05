@@ -52,6 +52,7 @@ export default function Index(){
                     placeholder="E-mail"
                     autoCapitalize="none"
                     keyboardType="email-address"
+                    style={style.formularioLogin}
                     error={errors.email?.message}
                     />
 
@@ -62,6 +63,7 @@ export default function Index(){
                     placeholder="Senha"
                     autoCapitalize="none"
                     secureTextEntry
+                    style={style.formularioLogin}
                     error={errors.senha?.message}
                     />
                     
@@ -87,7 +89,7 @@ export default function Index(){
 
 const style = StyleSheet.create({
     viewNormal: {
-        flex: 1,
+        flexGrow: 1,
         justifyContent: 'center',
         alignItems: 'center',
         backgroundColor: "#FDFDFD",
@@ -96,7 +98,8 @@ const style = StyleSheet.create({
     },
     formularioLogin: {
         // backgroundColor: "#789895",
-        width: 200,
+        height: 55,
+        width: 250,
         gap: 30
     },
 

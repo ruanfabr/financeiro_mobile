@@ -14,6 +14,7 @@ export function InputText <T extends FieldValues>({
     name,
     label,
     error,
+    style,
     clearErrors,
     ...TextInputProps
     }: ControllInputProps<T>) {
@@ -24,7 +25,7 @@ export function InputText <T extends FieldValues>({
             name={name}
             render={({ field: {onChange, onBlur, value} }) => (
                 <TextInput 
-                style={style.campoEscrita}
+                style={[styleComponent.campoEscrita, style]}
                 onBlur={onBlur}
                 onChangeText={(texto) => {
                     onChange(texto)
@@ -36,13 +37,13 @@ export function InputText <T extends FieldValues>({
             )}
             />
 
-            {error && <Text style={style.errorText}>{error}</Text>}
+            {error && <Text style={styleComponent.errorText}>{error}</Text>}
         </View>
     )
 }
 
 
-const style = StyleSheet.create({
+const styleComponent = StyleSheet.create({
     campoEscrita: {
         // backgroundColor: "#05050505",
         width: "100%",
