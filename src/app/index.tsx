@@ -33,7 +33,6 @@ export default function Index(){
     })
 
     function handleSignIn(data: loginFormData) {
-        // Alert.alert("Entrar", "Função de entrar acionada")
         console.log(data)
         router.push('/mainPage')
     }
