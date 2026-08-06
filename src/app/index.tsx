@@ -6,7 +6,7 @@ import {
 } from "react-native"
 import { InputText } from "@/components/input/InputText"
 import { ButtonComponent } from "@/components/Button"
-import { Link } from "expo-router"
+import { Link, useRouter } from "expo-router"
 import { z } from "zod"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -20,6 +20,7 @@ const loginSchema = z.object({
 type loginFormData = z.infer<typeof loginSchema>;
 
 export default function Index(){
+    const router = useRouter()
     const {
         control,
         clearErrors,
@@ -34,11 +35,11 @@ export default function Index(){
     function handleSignIn(data: loginFormData) {
         // Alert.alert("Entrar", "Função de entrar acionada")
         console.log(data)
+        router.push('/mainPage')
     }
 
     return(
     <ScreenWrapper>
-
         <ScrollView contentContainerStyle={{ flexGrow: 1 }} keyboardShouldPersistTaps="handled">
 
             <View style={style.viewNormal}>
@@ -52,7 +53,7 @@ export default function Index(){
                     placeholder="E-mail"
                     autoCapitalize="none"
                     keyboardType="email-address"
-                    style={style.formularioLogin}
+                    style={style.formularioLoginCampo}
                     error={errors.email?.message}
                     />
 
@@ -63,7 +64,7 @@ export default function Index(){
                     placeholder="Senha"
                     autoCapitalize="none"
                     secureTextEntry
-                    style={style.formularioLogin}
+                    style={style.formularioLoginCampo}
                     error={errors.senha?.message}
                     />
                     
@@ -75,6 +76,10 @@ export default function Index(){
 
                         <Text style={style.textCadastro}>
                             Não possui cadastro? {'\n'} <Link href="/auth/signup" style={style.linkCadastro}>Registre-se aqui</Link>
+                        </Text>
+                        
+                        <Text>
+                            Pular para <Link href="/mainPage" style={style.linkCadastro}>mainPage</Link>
                         </Text>
                     </View>
                 </View>
@@ -92,15 +97,18 @@ const style = StyleSheet.create({
         flexGrow: 1,
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: "#FDFDFD",
+        // backgroundColor: "#FDFDFD",
         padding:32,
         gap: 40
     },
     formularioLogin: {
         // backgroundColor: "#789895",
-        height: 55,
         width: 250,
         gap: 30
+    },
+    formularioLoginCampo: {
+        height: 55,
+        fontSize: 17
     },
 
 

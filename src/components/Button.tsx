@@ -27,7 +27,7 @@ type ButtonProps = TouchableOpacityProps & {
 
 const style = StyleSheet.create({
     container: {
-        padding: 2,
+        padding: 6,
         paddingInline: 10,
         backgroundColor: "#34c946",
         borderRadius: 9,
