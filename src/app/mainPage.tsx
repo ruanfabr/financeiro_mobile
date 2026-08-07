@@ -35,10 +35,10 @@ export default function MainPage(){
 
     return(
     <ScreenWrapper>
-        <View style={{ flex:1 }}>
-            {/* <View>
-                <Text>Olá</Text>
-            </View> */}
+        <View style={{ flex:1, paddingInline: 20, paddingBlock: 15 }}>
+            <View>
+                <Text style={styleContainer.dataResumo}>Agosto 2026</Text>
+            </View>
 
             <View style={styleContainer.containerGeral}>
 
@@ -57,7 +57,7 @@ export default function MainPage(){
                         </Text>
                     </View>
                     
-                    <View style={{ gap:17 }}>
+                    <View style={{ gap:17, paddingBottom: 6 }}>
                     {
                         exemploDados.map((dado) => {
                             
@@ -127,9 +127,13 @@ export default function MainPage(){
 
 const styleContainer = StyleSheet.create({
     containerGeral: {
-        paddingInline: 20,
         paddingBlock: 20,
         gap: 25
+    },
+    dataResumo: {
+        fontWeight: "bold",
+        fontSize: 17,
+        paddingInline: 3
     },
     containerPendencias: {
         backgroundColor: '#e6ba5c',
