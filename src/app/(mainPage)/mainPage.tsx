@@ -1,6 +1,7 @@
 import { ScreenWrapper } from "@/components/ScreenWrapper";
 import { Link } from "expo-router";
 import { View, Text, StyleSheet } from "react-native";
+import { ActionMovimentacao } from "./actionMovimentacao";
 
 
 
@@ -120,6 +121,8 @@ export default function MainPage(){
             </View>
 
         </View>
+        
+        <ActionMovimentacao/>
     </ScreenWrapper>
     )
 }
@@ -128,7 +131,7 @@ export default function MainPage(){
 const styleContainer = StyleSheet.create({
     containerGeral: {
         paddingBlock: 20,
-        gap: 25
+        gap: 45
     },
     dataResumo: {
         fontWeight: "bold",
@@ -163,7 +166,7 @@ const styleContainer = StyleSheet.create({
     },
     textTitle: {
         fontWeight: "bold",
-        fontSize: 20
+        fontSize: 23
     },
     containerConteudo: {
         justifyContent: "space-between",
@@ -172,11 +175,11 @@ const styleContainer = StyleSheet.create({
     textConteudo: {
         alignSelf: "flex-start",
         fontWeight: 600,
-        fontSize: 13
+        fontSize: 15
     },
     textVerMais: {
         fontWeight: "bold",
-        fontSize: 17,
+        fontSize: 18,
         justifyContent: "center",
         textAlign: "center",
         borderTopWidth: 2,
