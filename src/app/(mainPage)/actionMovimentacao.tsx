@@ -50,7 +50,7 @@ const styleContainer = StyleSheet.create({
     containerPrincipal: {
         position: 'absolute',
         bottom: 20,
-        right: 15,
+        right: 18,
         justifyContent: 'flex-end',
         alignItems: 'flex-end',
         width: '40%',
