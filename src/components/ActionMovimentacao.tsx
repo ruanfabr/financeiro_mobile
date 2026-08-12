@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { View, Text, StyleSheet, Pressable, useWindowDimensions } from "react-native";
+import { useRouter } from "expo-router";
 import MaterialIcons from '@expo/vector-icons/MaterialIcons';
 import Animated, {
     useAnimatedStyle,
@@ -10,13 +11,15 @@ import Animated, {
 
 export function ActionMovimentacao(){
     const { width } = useWindowDimensions()
+    const router = useRouter()
 
     const [actionAberto, setActionAberto] = useState(false)
     const progress = useSharedValue(0)
 
     const abrindoAction = () => {
+        console.log(!actionAberto)
         setActionAberto(!actionAberto)
-        progress.value = withTiming(actionAberto ? 1 : 0, { duration: 200 });
+        progress.value = withTiming(!actionAberto ? 1 : 0, { duration: 200 });
     }
 
     const estiloOpcoes = useAnimatedStyle(() => ({
@@ -30,7 +33,7 @@ export function ActionMovimentacao(){
     return(
         <View style={styleContainer.containerPrincipal}>
             <Animated.View style={[styleContainer.opcoes, estiloOpcoes]} pointerEvents={actionAberto ? "auto" : "none"}>
-                <Pressable onPress={() => console.log('Gerando ganho')}>
+                <Pressable onPress={() => {router.push('/gerandoGanho')}}>
                     <Text style={[styleContainer.textOpcoes, {fontSize: width * 0.05}]}>Gerar Ganho</Text>
                 </Pressable>
 
@@ -40,7 +43,7 @@ export function ActionMovimentacao(){
             </Animated.View>
 
             <Pressable style={styleContainer.imgCentral} onPress={abrindoAction}>
-                <MaterialIcons name={actionAberto ? "attach-money" : "close"} color="black" size={width * 0.1} style={styleContainer.iconeCentral}/>
+                <MaterialIcons name={actionAberto ? "close" : "attach-money"} color="black" size={width * 0.1} style={actionAberto ? styleContainer.iconeCentralMoney : styleContainer.iconeCentralClose}/>
             </Pressable>
         </View>
     )
@@ -53,7 +56,7 @@ const styleContainer = StyleSheet.create({
         right: 18,
         justifyContent: 'flex-end',
         alignItems: 'flex-end',
-        width: '40%',
+        width: 150,
         // aspectRatio: 1,
         // backgroundColor: 'green'
     },
@@ -66,9 +69,12 @@ const styleContainer = StyleSheet.create({
         justifyContent: 'center',
         aspectRatio: 1
     },
-    iconeCentral: {
+    iconeCentralMoney: {
         // backgroundColor: 'purple'
         left: 1.5
+    },
+    iconeCentralClose: {
+        // backgroundColor: 'purple'
     },
     opcoes: {
         marginBottom: 12,
