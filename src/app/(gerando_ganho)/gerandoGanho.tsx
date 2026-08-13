@@ -77,11 +77,12 @@ export default function GerandoGanho(){
                     />
                 </View>
 
-                <ButtonComponent
-                label='Salvar'
-                onPress={handleSubmit(salvarMovimentacao)}
-                style={{alignSelf: 'flex-end'}}
-                />
+                <View style={{}}>
+                    <ButtonComponent
+                    label='Salvar'
+                    onPress={handleSubmit(salvarMovimentacao)}
+                    />
+                </View>
             </View>
         </ScreenWrapper>
     )
