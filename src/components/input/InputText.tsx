@@ -6,6 +6,7 @@ interface ControllInputProps <T extends FieldValues> extends TextInputProps {
     name: Path<T>;
     label?: string;
     error?: string;
+    type?: "number" | "text";
     clearErrors?: UseFormClearErrors<T>;
 }
 
@@ -14,6 +15,7 @@ export function InputText <T extends FieldValues>({
     name,
     label,
     error,
+    type = "text",
     style,
     clearErrors,
     ...TextInputProps
@@ -28,8 +30,22 @@ export function InputText <T extends FieldValues>({
                 style={[styleComponent.campoEscrita, style]}
                 onBlur={onBlur}
                 onChangeText={(texto) => {
-                    onChange(texto)
-                    if (error && clearErrors) clearErrors(name)
+                    let valorOnchange: any = texto
+                    if (texto === ""){
+                        valorOnchange = null
+                    }
+                    else {
+                        valorOnchange = texto
+                    }
+
+                    if (type == "text"){
+                        onChange(valorOnchange)
+                        if (error && clearErrors) clearErrors(name)
+                        }
+                    else if (type == "number"){
+                        onChange(parseFloat(valorOnchange?.replaceAll(',', '.')))
+                        if (error && clearErrors) clearErrors(name)
+                    }
                 }}
                 value={value}
                 {...TextInputProps}

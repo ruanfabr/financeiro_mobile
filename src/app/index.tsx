@@ -78,7 +78,7 @@ export default function Index(){
                         </Text>
                         
                         <Text>
-                            Pular para <Link href="/mainPage" style={style.linkCadastro}>mainPage</Link>
+                            Pular para <Link href="/gerandoGanho" style={style.linkCadastro}>pagina trabalhando atual</Link>
                         </Text>
                     </View>
                 </View>
