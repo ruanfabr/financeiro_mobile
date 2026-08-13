@@ -10,7 +10,7 @@ import z from 'zod'
 const movimentoGanhoSchema = z.object({
     tituloMovimentacao: z.string().min(3, 'Pelo menos 3 caracteres'),
     valorMovimentacao: z.number().min(0.01, 'Valor inválido').nonnegative(),
-    descricaoMovimentacao: z.string().min(5, 'Precisa de no mínimo 5 caracteres').nullable(),
+    descricaoMovimentacao: z.string(),
     // dataMovimentacao: z.date()
     dataMovimentacao: z.string() // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
 })
@@ -80,6 +80,7 @@ export default function GerandoGanho(){
                 <ButtonComponent
                 label='Salvar'
                 onPress={handleSubmit(salvarMovimentacao)}
+                style={{alignSelf: 'flex-end'}}
                 />
             </View>
         </ScreenWrapper>

@@ -49,7 +49,7 @@ export default function Index(){
                     control={control}
                     name="email"
                     clearErrors={clearErrors}
-                    placeholder="E-mail"
+                    label="E-mail"
                     autoCapitalize="none"
                     keyboardType="email-address"
                     style={style.formularioLoginCampo}
@@ -60,7 +60,7 @@ export default function Index(){
                     control={control}
                     name="senha"
                     clearErrors={clearErrors}
-                    placeholder="Senha"
+                    label="Senha"
                     autoCapitalize="none"
                     secureTextEntry
                     style={style.formularioLoginCampo}
@@ -106,7 +106,6 @@ const style = StyleSheet.create({
         gap: 30
     },
     formularioLoginCampo: {
-        height: 55,
         fontSize: 17
     },
 
