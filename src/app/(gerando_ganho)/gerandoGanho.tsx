@@ -41,11 +41,13 @@ export default function GerandoGanho(){
                 Gerando Ganho
                 </Text>
 
+                <View style={styleContainer.conteudoPagina}>
                 <View style={styleContainer.containerDadosPrincipais}>
                     <InputText
                     control={control}
                     name='tituloMovimentacao'
                     label='Titulo'
+                    clearErrors={clearErrors}
                     placeholder='Titulo da movimentação'
                     error={errors.tituloMovimentacao?.message}
                     />
@@ -54,6 +56,7 @@ export default function GerandoGanho(){
                     control={control}
                     name='valorMovimentacao'
                     label='Valor'
+                    clearErrors={clearErrors}
                     keyboardType='numeric'
                     type='number'
                     placeholder='Valor'
@@ -64,6 +67,7 @@ export default function GerandoGanho(){
                     control={control}
                     name='descricaoMovimentacao'
                     label='Descrição'
+                    clearErrors={clearErrors}
                     placeholder='Descrição (opcional)'
                     error={errors.descricaoMovimentacao?.message}
                     />
@@ -72,17 +76,20 @@ export default function GerandoGanho(){
                     control={control}
                     name='dataMovimentacao'
                     label='Data efetuada'
+                    clearErrors={clearErrors}
                     placeholder='Data efetuada'
                     error={errors.dataMovimentacao?.message}
                     />
                 </View>
 
-                <View style={{}}>
+                <View style={styleContainer.botaoSalvar}>
                     <ButtonComponent
                     label='Salvar'
                     onPress={handleSubmit(salvarMovimentacao)}
                     />
                 </View>
+                </View>
+
             </View>
         </ScreenWrapper>
     )
@@ -90,7 +97,15 @@ export default function GerandoGanho(){
 
 
 const styleContainer = StyleSheet.create({
+    conteudoPagina: {
+        flex: 1,
+        justifyContent: 'space-between'
+    },
     containerDadosPrincipais: {
         gap: 20
+    },
+
+    botaoSalvar: {
+        // alignSelf: 'flex-end',
     }
 })
