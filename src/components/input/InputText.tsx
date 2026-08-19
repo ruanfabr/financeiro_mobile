@@ -82,7 +82,7 @@ const styleComponent = StyleSheet.create({
     campoEscrita1: {
         // backgroundColor: "#05050505",
         // width: "100%",
-        height: 42,
+        height: 47,
         paddingLeft: 12,
         paddingRight: 8,
         
@@ -96,7 +96,7 @@ const styleComponent = StyleSheet.create({
     },
 
     textLabel2: {
-        fontSize: 13,
+        fontSize: 13.7,
         fontWeight: "500",
         paddingLeft: 5,
         paddingBottom: 5
@@ -105,7 +105,8 @@ const styleComponent = StyleSheet.create({
     campoEscrita2: {
         // backgroundColor: "#05050505",
         // width: "100%",
-        height: 44,
+        height: 49,
+        fontSize: 16,
         paddingLeft: 12,
         paddingRight: 8,
         paddingBlock: 1,

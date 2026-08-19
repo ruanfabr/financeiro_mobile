@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { View, Text, StyleSheet, Pressable, useWindowDimensions } from "react-native";
 import { useRouter } from "expo-router";
-import MaterialIcons from '@expo/vector-icons/MaterialIcons';
+import FontAwesome6 from '@expo/vector-icons/FontAwesome6';
 import Animated, {
     useAnimatedStyle,
     useSharedValue,
@@ -37,13 +37,13 @@ export function ActionMovimentacao(){
                     <Text style={[styleContainer.textOpcoes, {fontSize: width * 0.05}]}>Gerar Ganho</Text>
                 </Pressable>
 
-                <Pressable onPress={() => console.log('Gerando gasto')}>
+                <Pressable onPress={() => {router.push('/gerandoGasto')}}>
                     <Text style={[styleContainer.textOpcoes, {fontSize: width * 0.05}]}>Gerar Gasto</Text>
                 </Pressable>
             </Animated.View>
 
             <Pressable style={styleContainer.imgCentral} onPress={abrindoAction}>
-                <MaterialIcons name={actionAberto ? "close" : "attach-money"} color="black" size={width * 0.1} style={actionAberto ? styleContainer.iconeCentralMoney : styleContainer.iconeCentralClose}/>
+                <FontAwesome6 name={actionAberto ? "xmark" : "dollar-sign"} color="black" size={width * 0.09} style={actionAberto ? styleContainer.iconeCentralClose : styleContainer.iconeCentralMoney}/>
             </Pressable>
         </View>
     )
@@ -67,11 +67,13 @@ const styleContainer = StyleSheet.create({
         // height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
-        aspectRatio: 1
+        alignContent: 'center',
+        aspectRatio: 1,
     },
     iconeCentralMoney: {
-        // backgroundColor: 'purple'
-        left: 1.5
+        // backgroundColor: 'purple',
+        // left: 1.5
+
     },
     iconeCentralClose: {
         // backgroundColor: 'purple'

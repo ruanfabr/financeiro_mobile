@@ -12,6 +12,8 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { ScreenWrapper } from "@/components/ScreenWrapper"
 
+
+
 const loginSchema = z.object({
     email: z.email('E-mail inválido').min(1, 'Preencher campo'),
     senha: z.string({error: "Preencher campo"}).min(1, 'Preencher campo')
@@ -79,6 +81,10 @@ export default function Index(){
                         
                         <Text>
                             Pular para <Link href="/gerandoGanho" style={style.linkCadastro}>pagina trabalhando atual</Link>
+                        </Text>
+
+                        <Text>
+                            mainPage <Link href="/mainPage" style={style.linkCadastro}> aqui </Link>
                         </Text>
                     </View>
                 </View>

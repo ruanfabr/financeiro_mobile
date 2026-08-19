@@ -8,7 +8,7 @@ import { useSQLiteContext } from 'expo-sqlite'
 import z from 'zod'
 
 
-const movimentoGanhoSchema = z.object({
+const movimentoGastoSchema = z.object({
     tituloMovimentacao: z.string().min(3, 'Pelo menos 3 caracteres'),
     valorMovimentacao: z.number().min(0.01, 'Valor inválido').nonnegative(),
     descricaoMovimentacao: z.string(),
@@ -16,9 +16,9 @@ const movimentoGanhoSchema = z.object({
     dataMovimentacao: z.string() // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
 })
 
-type movimentoGanhoFormData = z.infer<typeof movimentoGanhoSchema>;
+type movimentoGastoFormData = z.infer<typeof movimentoGastoSchema>;
 
-export default function GerandoGanho(){
+export default function GerandoGasto(){
 
     const db = useSQLiteContext()
 
@@ -27,13 +27,13 @@ export default function GerandoGanho(){
         clearErrors,
         handleSubmit,
         formState: {errors}
-    } = useForm<movimentoGanhoFormData>({
-        resolver: zodResolver(movimentoGanhoSchema),
+    } = useForm<movimentoGastoFormData>({
+        resolver: zodResolver(movimentoGastoSchema),
         mode: 'onSubmit',
         reValidateMode: 'onSubmit',
     })
 
-    async function salvarMovimentacao(data: movimentoGanhoFormData) {
+    async function salvarMovimentacao(data: movimentoGastoFormData) {
         console.log(data)
         await db.runAsync(
             `
@@ -54,7 +54,7 @@ export default function GerandoGanho(){
             data.valorMovimentacao,
             data.descricaoMovimentacao,
             data.dataMovimentacao,
-            1,
+            2,
             null
         )
     }
@@ -62,11 +62,9 @@ export default function GerandoGanho(){
     return(
         <ScreenWrapper>
             <View style={{ flex:1, paddingInline: 13, paddingBlock: 15 }}>
-                <View>
-                    <Text style={styleContainer.tituloPagina}>
-                    Gerando Ganho
-                    </Text>
-                </View>
+                <Text>
+                Gerando Gasto
+                </Text>
 
                 <View style={styleContainer.conteudoPagina}>
                 <View style={styleContainer.containerDadosPrincipais}>
@@ -124,20 +122,12 @@ export default function GerandoGanho(){
 
 
 const styleContainer = StyleSheet.create({
-    tituloPagina: {
-        fontSize: 27,
-        fontWeight: '600',
-        paddingInline: 7,
-        paddingBlock: 8
-    },
-
     conteudoPagina: {
         flex: 1,
         justifyContent: 'space-between'
     },
-
     containerDadosPrincipais: {
-        gap: 25
+        gap: 20
     },
 
     botaoSalvar: {
