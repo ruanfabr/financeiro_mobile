@@ -1,42 +1,41 @@
-import { ButtonComponent } from '@/components/Button'
-import { InputText } from '@/components/input/InputText'
-import { ScreenWrapper } from '@/components/ScreenWrapper'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { useForm } from 'react-hook-form'
-import { View, Text, StyleSheet } from 'react-native'
-import { useSQLiteContext } from 'expo-sqlite'
-import z from 'zod'
-
+import { ButtonComponent } from "@/components/input/Button";
+import { InputText } from "@/components/input/InputText";
+import { InputCheckbox } from "@/components/input/checkBox";
+import { ScreenWrapper } from "@/components/ScreenWrapper";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useSQLiteContext } from "expo-sqlite";
+import { useForm } from "react-hook-form";
+import { StyleSheet, Text, View } from "react-native";
+import z from "zod";
 
 const movimentoGanhoSchema = z.object({
-    tituloMovimentacao: z.string().min(3, 'Pelo menos 3 caracteres'),
-    valorMovimentacao: z.number().min(0.01, 'Valor inválido').nonnegative(),
-    descricaoMovimentacao: z.string(),
-    // dataMovimentacao: z.date()
-    dataMovimentacao: z.string() // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
-})
+  tituloMovimentacao: z.string().min(3, "Pelo menos 3 caracteres"),
+  valorMovimentacao: z.number().min(0.01, "Valor inválido").nonnegative(),
+  descricaoMovimentacao: z.string(),
+  // dataMovimentacao: z.date()
+  dataMovimentacao: z.string(), // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
+});
 
 type movimentoGanhoFormData = z.infer<typeof movimentoGanhoSchema>;
 
-export default function GerandoGanho(){
+export default function GerandoGanho() {
+  const db = useSQLiteContext();
 
-    const db = useSQLiteContext()
+  const {
+    control,
+    clearErrors,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<movimentoGanhoFormData>({
+    resolver: zodResolver(movimentoGanhoSchema),
+    mode: "onSubmit",
+    reValidateMode: "onSubmit",
+  });
 
-    const {
-        control,
-        clearErrors,
-        handleSubmit,
-        formState: {errors}
-    } = useForm<movimentoGanhoFormData>({
-        resolver: zodResolver(movimentoGanhoSchema),
-        mode: 'onSubmit',
-        reValidateMode: 'onSubmit',
-    })
-
-    async function salvarMovimentacao(data: movimentoGanhoFormData) {
-        console.log(data)
-        await db.runAsync(
-            `
+  async function salvarMovimentacao(data: movimentoGanhoFormData) {
+    console.log(data);
+    await db.runAsync(
+      `
             INSERT INTO movimentacoes (
             titulo,
             valor,
@@ -50,97 +49,95 @@ export default function GerandoGanho(){
             ?,?,?,?,?,?
             )
             `,
-            data.tituloMovimentacao,
-            data.valorMovimentacao,
-            data.descricaoMovimentacao,
-            data.dataMovimentacao,
-            1,
-            null
-        )
-    }
+      data.tituloMovimentacao,
+      data.valorMovimentacao,
+      data.descricaoMovimentacao,
+      data.dataMovimentacao,
+      1,
+      null,
+    );
+  }
 
-    return(
-        <ScreenWrapper>
-            <View style={{ flex:1, paddingInline: 13, paddingBlock: 15 }}>
-                <View>
-                    <Text style={styleContainer.tituloPagina}>
-                    Gerando Ganho
-                    </Text>
-                </View>
+  return (
+    <ScreenWrapper>
+      <View style={{ flex: 1, paddingInline: 13, paddingBlock: 15 }}>
+        <View>
+          <Text style={styleContainer.tituloPagina}>Gerando Ganho</Text>
+        </View>
 
-                <View style={styleContainer.conteudoPagina}>
-                <View style={styleContainer.containerDadosPrincipais}>
-                    <InputText
-                    control={control}
-                    name='tituloMovimentacao'
-                    label='Titulo'
-                    clearErrors={clearErrors}
-                    placeholder='Titulo da movimentação'
-                    error={errors.tituloMovimentacao?.message}
-                    />
-                    
-                    <InputText
-                    control={control}
-                    name='valorMovimentacao'
-                    label='Valor'
-                    clearErrors={clearErrors}
-                    keyboardType='numeric'
-                    type='number'
-                    placeholder='Valor'
-                    error={errors.valorMovimentacao?.message}
-                    />
+        <View style={styleContainer.conteudoPagina}>
+          <View style={styleContainer.containerDadosPrincipais}>
+            <InputText
+              control={control}
+              name="tituloMovimentacao"
+              label="Titulo"
+              clearErrors={clearErrors}
+              placeholder="Titulo da movimentação"
+              error={errors.tituloMovimentacao?.message}
+            />
 
-                    <InputText
-                    control={control}
-                    name='descricaoMovimentacao'
-                    label='Descrição'
-                    clearErrors={clearErrors}
-                    placeholder='Descrição (opcional)'
-                    error={errors.descricaoMovimentacao?.message}
-                    />
+            <InputText
+              control={control}
+              name="valorMovimentacao"
+              label="Valor"
+              clearErrors={clearErrors}
+              keyboardType="numeric"
+              type="number"
+              placeholder="Valor"
+              error={errors.valorMovimentacao?.message}
+            />
 
-                    <InputText
-                    control={control}
-                    name='dataMovimentacao'
-                    label='Data efetuada'
-                    clearErrors={clearErrors}
-                    placeholder='Data efetuada'
-                    error={errors.dataMovimentacao?.message}
-                    />
-                </View>
+            <InputText
+              control={control}
+              name="descricaoMovimentacao"
+              label="Descrição"
+              clearErrors={clearErrors}
+              placeholder="Descrição (opcional)"
+              error={errors.descricaoMovimentacao?.message}
+            />
 
-                <View style={styleContainer.botaoSalvar}>
-                    <ButtonComponent
-                    label='Salvar'
-                    onPress={handleSubmit(salvarMovimentacao)}
-                    />
-                </View>
-                </View>
+            <InputText
+              control={control}
+              name="dataMovimentacao"
+              label="Data efetuada"
+              clearErrors={clearErrors}
+              placeholder="Data efetuada"
+              error={errors.dataMovimentacao?.message}
+            />
 
-            </View>
-        </ScreenWrapper>
-    )
+            <InputCheckbox/>
+          </View>
+
+          <View style={styleContainer.botaoSalvar}>
+            <ButtonComponent
+              label="Salvar"
+              onPress={handleSubmit(salvarMovimentacao)}
+            />
+          </View>
+        </View>
+      </View>
+    </ScreenWrapper>
+  );
 }
 
-
 const styleContainer = StyleSheet.create({
-    tituloPagina: {
-        fontSize: 27,
-        fontWeight: '600',
-        paddingInline: 7,
-        paddingBlock: 8
-    },
+  tituloPagina: {
+    fontSize: 27,
+    fontWeight: "600",
+    paddingInline: 7,
+    paddingBlock: 8,
+  },
 
-    conteudoPagina: {
-        flex: 1,
-        justifyContent: 'space-between'
-    },
+  conteudoPagina: {
+    flex: 1,
+    justifyContent: "space-between",
+  },
 
-    containerDadosPrincipais: {
-        gap: 25
-    },
+  containerDadosPrincipais: {
+    gap: 25,
+  },
 
-    botaoSalvar: {
-        // alignSelf: 'flex-end',
-    }
-})
+  botaoSalvar: {
+    // alignSelf: 'flex-end',
+  },
+});
