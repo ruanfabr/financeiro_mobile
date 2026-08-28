@@ -6,6 +6,7 @@ interface ControllInputProps <T extends FieldValues> extends TextInputProps {
     name: Path<T>;
     label?: string;
     error?: string;
+    type?: "number" | "text";
     clearErrors?: UseFormClearErrors<T>;
 }
 
@@ -14,25 +15,44 @@ export function InputText <T extends FieldValues>({
     name,
     label,
     error,
+    type = "text",
     style,
     clearErrors,
     ...TextInputProps
     }: ControllInputProps<T>) {
     return(
         <View>
+            <Text style={styleComponent.textLabel2}>
+                {label}
+            </Text>
             <Controller
             control={control}
             name={name}
             render={({ field: {onChange, onBlur, value} }) => (
                 <TextInput 
-                style={[styleComponent.campoEscrita, style]}
+                style={[styleComponent.campoEscrita2, style]}
                 onBlur={onBlur}
                 onChangeText={(texto) => {
-                    onChange(texto)
-                    if (error && clearErrors) clearErrors(name)
+                    let valorOnchange: any = texto
+                    if (texto === ""){
+                        valorOnchange = null
+                    }
+                    else {
+                        valorOnchange = texto
+                    }
+
+                    if (type == "text"){
+                        onChange(valorOnchange)
+                        if (error && clearErrors) clearErrors(name)
+                        }
+                    else if (type == "number"){
+                        onChange(parseFloat(valorOnchange?.replaceAll(',', '.')))
+                        if (error && clearErrors) clearErrors(name)
+                    }
                 }}
                 value={value}
                 {...TextInputProps}
+                placeholderTextColor={"#7e7e7e"}
                 />
             )}
             />
@@ -44,15 +64,56 @@ export function InputText <T extends FieldValues>({
 
 
 const styleComponent = StyleSheet.create({
-    campoEscrita: {
-        // backgroundColor: "#05050505",
-        width: "100%",
-        height: 42,
-        borderWidth: 1,
+    textLabel1: {
+        fontSize: 13,
+        fontWeight: "500",
+        paddingTop: 7,
+        paddingInline: 8,
+
+        borderTopWidth: 1,
+        borderStartWidth: 1,
+        borderEndWidth: 1,
+
+        borderTopLeftRadius: 7,
+        borderTopRightRadius: 7,
         borderColor: "#555555",
+    },
+
+    campoEscrita1: {
+        // backgroundColor: "#05050505",
+        // width: "100%",
+        height: 47,
+        paddingLeft: 12,
+        paddingRight: 8,
+        
+        borderRightWidth: 1,
+        borderLeftWidth: 1,
+        borderBottomWidth: 1,
+        
+        borderBottomLeftRadius: 7,
+        borderBottomRightRadius: 7,
+        borderColor: "#555555",
+    },
+
+    textLabel2: {
+        fontSize: 13.7,
+        fontWeight: "500",
+        paddingLeft: 5,
+        paddingBottom: 5
+    },
+
+    campoEscrita2: {
+        // backgroundColor: "#05050505",
+        // width: "100%",
+        height: 49,
+        fontSize: 16,
+        paddingLeft: 12,
+        paddingRight: 8,
+        paddingBlock: 1,
+        
+        borderWidth: 1,
         borderRadius: 7,
-        paddingLeft: 15,
-        paddingRight: 10
+        borderColor: "#555555",
     },
 
     errorText: {
