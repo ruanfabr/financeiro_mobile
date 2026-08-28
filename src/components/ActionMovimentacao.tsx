@@ -7,6 +7,8 @@ import Animated, {
     useSharedValue,
     withTiming
 } from 'react-native-reanimated'
+import { colors } from "@/theme/colors";
+import { fonts } from "@/theme/typography";
 
 
 export function ActionMovimentacao(){
@@ -17,9 +19,14 @@ export function ActionMovimentacao(){
     const progress = useSharedValue(0)
 
     const abrindoAction = () => {
-        console.log(!actionAberto)
         setActionAberto(!actionAberto)
         progress.value = withTiming(!actionAberto ? 1 : 0, { duration: 200 });
+    }
+
+    const navegarPara = (rota: '/gerandoGanho' | '/gerandoGasto') => {
+        setActionAberto(false)
+        progress.value = 0
+        router.push(rota)
     }
 
     const estiloOpcoes = useAnimatedStyle(() => ({
@@ -29,23 +36,35 @@ export function ActionMovimentacao(){
         ],
     }))
 
-    
+
     return(
+        <>
+        {actionAberto && (
+            <Pressable style={StyleSheet.absoluteFillObject} onPress={abrindoAction} />
+        )}
+
         <View style={styleContainer.containerPrincipal}>
             <Animated.View style={[styleContainer.opcoes, estiloOpcoes]} pointerEvents={actionAberto ? "auto" : "none"}>
-                <Pressable onPress={() => {router.push('/gerandoGanho')}}>
-                    <Text style={[styleContainer.textOpcoes, {fontSize: width * 0.05}]}>Gerar Ganho</Text>
+                <Pressable
+                style={[styleContainer.opcaoBotao, { backgroundColor: colors.green }]}
+                onPress={() => navegarPara('/gerandoGanho')}
+                >
+                    <Text style={styleContainer.textOpcoes}>Gerar Ganho</Text>
                 </Pressable>
 
-                <Pressable onPress={() => {router.push('/gerandoGasto')}}>
-                    <Text style={[styleContainer.textOpcoes, {fontSize: width * 0.05}]}>Gerar Gasto</Text>
+                <Pressable
+                style={[styleContainer.opcaoBotao, { backgroundColor: colors.red }]}
+                onPress={() => navegarPara('/gerandoGasto')}
+                >
+                    <Text style={styleContainer.textOpcoes}>Gerar Gasto</Text>
                 </Pressable>
             </Animated.View>
 
             <Pressable style={styleContainer.imgCentral} onPress={abrindoAction}>
-                <FontAwesome6 name={actionAberto ? "xmark" : "dollar-sign"} color="black" size={width * 0.09} style={actionAberto ? styleContainer.iconeCentralClose : styleContainer.iconeCentralMoney}/>
+                <FontAwesome6 name={actionAberto ? "xmark" : "dollar-sign"} color={colors.white} size={width * 0.07}/>
             </Pressable>
         </View>
+        </>
     )
 }
 
@@ -57,39 +76,34 @@ const styleContainer = StyleSheet.create({
         justifyContent: 'flex-end',
         alignItems: 'flex-end',
         width: 150,
-        // aspectRatio: 1,
-        // backgroundColor: 'green'
     },
     imgCentral: {
-        backgroundColor: "#979797",
+        backgroundColor: colors.purple,
         borderRadius: 100,
         width: '40%',
-        // height: '100%',
         alignItems: 'center',
         justifyContent: 'center',
         alignContent: 'center',
         aspectRatio: 1,
-    },
-    iconeCentralMoney: {
-        // backgroundColor: 'purple',
-        // left: 1.5
-
-    },
-    iconeCentralClose: {
-        // backgroundColor: 'purple'
+        shadowColor: colors.purple,
+        shadowOpacity: 0.5,
+        shadowRadius: 10,
+        shadowOffset: { width: 0, height: 4 },
+        elevation: 6,
     },
     opcoes: {
         marginBottom: 12,
-        alignItems: "center",
-        backgroundColor: 'gray',
-        paddingInline: 15,
-        paddingBlock: 18,
-        gap: 22,
-        borderRadius: 20
+        alignItems: "flex-end",
+        gap: 10,
+    },
+    opcaoBotao: {
+        paddingInline: 16,
+        paddingBlock: 9,
+        borderRadius: 100,
     },
     textOpcoes: {
-        fontWeight: '600'
-        // paddingBlock: 8,
-        // paddingInline: 15,
+        fontFamily: fonts.bodyBold,
+        fontSize: 13,
+        color: colors.white,
     }
 })

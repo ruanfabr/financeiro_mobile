@@ -1,5 +1,8 @@
+import { useState } from "react"
 import { TextInput, Text, View, StyleSheet, TextInputProps } from "react-native"
 import { Controller, Control, FieldValues, Path, UseFormClearErrors } from "react-hook-form"
+import { colors } from "@/theme/colors"
+import { fonts } from "@/theme/typography"
 
 interface ControllInputProps <T extends FieldValues> extends TextInputProps {
     control: Control<T>;
@@ -20,6 +23,8 @@ export function InputText <T extends FieldValues>({
     clearErrors,
     ...TextInputProps
     }: ControllInputProps<T>) {
+    const [focado, setFocado] = useState(false)
+
     return(
         <View>
             <Text style={styleComponent.textLabel2}>
@@ -29,9 +34,13 @@ export function InputText <T extends FieldValues>({
             control={control}
             name={name}
             render={({ field: {onChange, onBlur, value} }) => (
-                <TextInput 
-                style={[styleComponent.campoEscrita2, style]}
-                onBlur={onBlur}
+                <TextInput
+                style={[styleComponent.campoEscrita2, focado && styleComponent.campoEscritaFocado, style]}
+                onFocus={() => setFocado(true)}
+                onBlur={() => {
+                    setFocado(false)
+                    onBlur()
+                }}
                 onChangeText={(texto) => {
                     let valorOnchange: any = texto
                     if (texto === ""){
@@ -52,7 +61,7 @@ export function InputText <T extends FieldValues>({
                 }}
                 value={value}
                 {...TextInputProps}
-                placeholderTextColor={"#7e7e7e"}
+                placeholderTextColor={colors.textFaint}
                 />
             )}
             />
@@ -64,60 +73,36 @@ export function InputText <T extends FieldValues>({
 
 
 const styleComponent = StyleSheet.create({
-    textLabel1: {
-        fontSize: 13,
-        fontWeight: "500",
-        paddingTop: 7,
-        paddingInline: 8,
-
-        borderTopWidth: 1,
-        borderStartWidth: 1,
-        borderEndWidth: 1,
-
-        borderTopLeftRadius: 7,
-        borderTopRightRadius: 7,
-        borderColor: "#555555",
-    },
-
-    campoEscrita1: {
-        // backgroundColor: "#05050505",
-        // width: "100%",
-        height: 47,
-        paddingLeft: 12,
-        paddingRight: 8,
-        
-        borderRightWidth: 1,
-        borderLeftWidth: 1,
-        borderBottomWidth: 1,
-        
-        borderBottomLeftRadius: 7,
-        borderBottomRightRadius: 7,
-        borderColor: "#555555",
-    },
-
     textLabel2: {
+        fontFamily: fonts.bodySemiBold,
         fontSize: 13.7,
-        fontWeight: "500",
+        color: colors.textMuted,
         paddingLeft: 5,
         paddingBottom: 5
     },
 
     campoEscrita2: {
-        // backgroundColor: "#05050505",
-        // width: "100%",
         height: 49,
+        fontFamily: fonts.bodyMedium,
         fontSize: 16,
+        color: colors.text,
+        backgroundColor: colors.surface,
         paddingLeft: 12,
         paddingRight: 8,
         paddingBlock: 1,
-        
+
         borderWidth: 1,
-        borderRadius: 7,
-        borderColor: "#555555",
+        borderRadius: 12,
+        borderColor: colors.border,
+    },
+
+    campoEscritaFocado: {
+        borderColor: colors.purple,
     },
 
     errorText: {
-        color: '#e65045',
+        fontFamily: fonts.bodyMedium,
+        color: colors.error,
         paddingLeft: 6,
         paddingBlock: 2
     }

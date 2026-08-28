@@ -1,18 +1,19 @@
 import { ButtonComponent } from "@/components/input/Button";
 import { InputText } from "@/components/input/InputText";
+import { InputDate } from "@/components/input/InputDate";
+import { HeaderVoltar } from "@/components/HeaderVoltar";
 import { ScreenWrapper } from "@/components/ScreenWrapper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSQLiteContext } from "expo-sqlite";
 import { useForm } from "react-hook-form";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import z from "zod";
 
 const movimentoGastoSchema = z.object({
   tituloMovimentacao: z.string().min(3, "Pelo menos 3 caracteres"),
   valorMovimentacao: z.number().min(0.01, "Valor inválido").nonnegative(),
-  descricaoMovimentacao: z.string(),
-  // dataMovimentacao: z.date()
-  dataMovimentacao: z.string(), // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
+  descricaoMovimentacao: z.string().nullish(),
+  dataMovimentacao: z.string().min(1, "Selecione uma data"),
 });
 
 type movimentoGastoFormData = z.infer<typeof movimentoGastoSchema>;
@@ -24,6 +25,7 @@ export default function GerandoGasto() {
     control,
     clearErrors,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<movimentoGastoFormData>({
     resolver: zodResolver(movimentoGastoSchema),
@@ -50,17 +52,18 @@ export default function GerandoGasto() {
             `,
       data.tituloMovimentacao,
       data.valorMovimentacao,
-      data.descricaoMovimentacao,
+      data.descricaoMovimentacao? data.descricaoMovimentacao : null,
       data.dataMovimentacao,
       2,
       null,
     );
+    reset();
   }
 
   return (
     <ScreenWrapper>
       <View style={{ flex: 1, paddingInline: 13, paddingBlock: 15 }}>
-        <Text>Gerando Gasto</Text>
+        <HeaderVoltar titulo="Gerando Gasto" />
 
         <View style={styleContainer.conteudoPagina}>
           <View style={styleContainer.containerDadosPrincipais}>
@@ -93,12 +96,11 @@ export default function GerandoGasto() {
               error={errors.descricaoMovimentacao?.message}
             />
 
-            <InputText
+            <InputDate
               control={control}
               name="dataMovimentacao"
               label="Data efetuada"
               clearErrors={clearErrors}
-              placeholder="Data efetuada"
               error={errors.dataMovimentacao?.message}
             />
           </View>
@@ -106,6 +108,7 @@ export default function GerandoGasto() {
           <View style={styleContainer.botaoSalvar}>
             <ButtonComponent
               label="Salvar"
+              variant="red"
               onPress={handleSubmit(salvarMovimentacao)}
             />
           </View>

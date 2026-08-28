@@ -1,19 +1,20 @@
 import { ButtonComponent } from "@/components/input/Button";
 import { InputText } from "@/components/input/InputText";
+import { InputDate } from "@/components/input/InputDate";
 import { InputCheckbox } from "@/components/input/checkBox";
+import { HeaderVoltar } from "@/components/HeaderVoltar";
 import { ScreenWrapper } from "@/components/ScreenWrapper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSQLiteContext } from "expo-sqlite";
 import { useForm } from "react-hook-form";
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import z from "zod";
 
 const movimentoGanhoSchema = z.object({
   tituloMovimentacao: z.string().min(3, "Pelo menos 3 caracteres"),
   valorMovimentacao: z.number().min(0.01, "Valor inválido").nonnegative(),
-  descricaoMovimentacao: z.string(),
-  // dataMovimentacao: z.date()
-  dataMovimentacao: z.string(), // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
+  descricaoMovimentacao: z.string().nullish(),
+  dataMovimentacao: z.string().min(1, "Selecione uma data"),
 });
 
 type movimentoGanhoFormData = z.infer<typeof movimentoGanhoSchema>;
@@ -25,6 +26,7 @@ export default function GerandoGanho() {
     control,
     clearErrors,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<movimentoGanhoFormData>({
     resolver: zodResolver(movimentoGanhoSchema),
@@ -51,19 +53,18 @@ export default function GerandoGanho() {
             `,
       data.tituloMovimentacao,
       data.valorMovimentacao,
-      data.descricaoMovimentacao,
+      data.descricaoMovimentacao? data.descricaoMovimentacao : null,
       data.dataMovimentacao,
       1,
       null,
     );
+    reset();
   }
 
   return (
     <ScreenWrapper>
       <View style={{ flex: 1, paddingInline: 13, paddingBlock: 15 }}>
-        <View>
-          <Text style={styleContainer.tituloPagina}>Gerando Ganho</Text>
-        </View>
+        <HeaderVoltar titulo="Gerando Ganho" />
 
         <View style={styleContainer.conteudoPagina}>
           <View style={styleContainer.containerDadosPrincipais}>
@@ -96,21 +97,21 @@ export default function GerandoGanho() {
               error={errors.descricaoMovimentacao?.message}
             />
 
-            <InputText
+            <InputDate
               control={control}
               name="dataMovimentacao"
               label="Data efetuada"
               clearErrors={clearErrors}
-              placeholder="Data efetuada"
               error={errors.dataMovimentacao?.message}
             />
 
-            <InputCheckbox/>
+            <InputCheckbox label="Já foi paga"/>
           </View>
 
           <View style={styleContainer.botaoSalvar}>
             <ButtonComponent
               label="Salvar"
+              variant="green"
               onPress={handleSubmit(salvarMovimentacao)}
             />
           </View>
@@ -121,13 +122,6 @@ export default function GerandoGanho() {
 }
 
 const styleContainer = StyleSheet.create({
-  tituloPagina: {
-    fontSize: 27,
-    fontWeight: "600",
-    paddingInline: 7,
-    paddingBlock: 8,
-  },
-
   conteudoPagina: {
     flex: 1,
     justifyContent: "space-between",
