@@ -6,16 +6,27 @@ import { FieldValues } from "react-hook-form";
 import { View, Text, StyleSheet, Pressable } from "react-native";
 
 
-export function InputCheckbox <T extends FieldValues>({ label }: {label: string}){
+interface propCheckBox {
+    label: string,
+    size?: number
+}
+
+export function InputCheckbox <T extends FieldValues>({ label, size = 22 }: propCheckBox){
     const [checked, setChecked] = useState(false)
 
     return (
         <Pressable style={styleContainer.linha} onPress={() => setChecked(!checked)}>
-            <View style={[styleContainer.mainBox, checked && styleContainer.mainBoxCheck]}>
-                {checked && <FontAwesome6 name="check" size={12} color={colors.white}/>}
+            <View
+            style={[
+                styleContainer.mainBox,
+                {width: size, height: size, borderRadius: size * 0.32},
+                checked && styleContainer.mainBoxCheck
+            ]}
+            >
+                {checked && <FontAwesome6 name="check" size={size * 0.55} color={colors.white}/>}
             </View>
 
-            <Text style={styleContainer.texto}>
+            <Text style={[styleContainer.texto, size?{fontSize: size * 0.69}:null]}>
                 {label}
             </Text>
         </Pressable>
@@ -26,7 +37,8 @@ const styleContainer = StyleSheet.create({
     linha: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 10
+        alignSelf: "flex-start",
+        gap: 10,
     },
     mainBox: {
         width: 22,

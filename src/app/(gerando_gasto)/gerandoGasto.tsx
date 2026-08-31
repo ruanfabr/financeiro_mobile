@@ -1,5 +1,6 @@
 import { ButtonComponent } from "@/components/input/Button";
 import { InputText } from "@/components/input/InputText";
+import { InputSelect } from "@/components/input/InputSelect";
 import { ScreenWrapper } from "@/components/ScreenWrapper";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useSQLiteContext } from "expo-sqlite";
@@ -7,12 +8,21 @@ import { useForm } from "react-hook-form";
 import { StyleSheet, Text, View } from "react-native";
 import z from "zod";
 
+const categoriasGasto = [
+  { label: "Alimentação", value: "alimentacao", icone: "utensils" },
+  { label: "Casa", value: "casa", icone: "house" },
+  { label: "Transporte", value: "transporte", icone: "car" },
+  { label: "Lazer", value: "lazer", icone: "gamepad" },
+  { label: "Outro", value: "outro", icone: "ellipsis" },
+];
+
 const movimentoGastoSchema = z.object({
   tituloMovimentacao: z.string().min(3, "Pelo menos 3 caracteres"),
   valorMovimentacao: z.number().min(0.01, "Valor inválido").nonnegative(),
   descricaoMovimentacao: z.string(),
   // dataMovimentacao: z.date()
   dataMovimentacao: z.string(), // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
+  categoria: z.string().min(1, "Selecione uma categoria"),
 });
 
 type movimentoGastoFormData = z.infer<typeof movimentoGastoSchema>;
@@ -100,6 +110,16 @@ export default function GerandoGasto() {
               clearErrors={clearErrors}
               placeholder="Data efetuada"
               error={errors.dataMovimentacao?.message}
+            />
+
+            <InputSelect
+            control={control}
+            name="categoria"
+            label="Categoria"
+            titulo="Categoria do gasto"
+            opcoes={categoriasGasto}
+            clearErrors={clearErrors}
+            error={errors.categoria?.message}
             />
           </View>
 

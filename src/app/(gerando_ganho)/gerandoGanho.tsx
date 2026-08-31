@@ -9,6 +9,15 @@ import { StyleSheet, Text, View } from "react-native";
 import z from "zod";
 import { HeaderVoltar } from "@/components/HeaderVoltar";
 import { InputDate } from "@/components/input/InputDate";
+import { InputSelect } from "@/components/input/InputSelect";
+
+const categoriasGanho = [
+  { label: "Salário", value: "salario", icone: "sack-dollar" },
+  { label: "Freelance", value: "freelance", icone: "laptop" },
+  { label: "Investimento", value: "investimento", icone: "chart-line" },
+  { label: "Presente", value: "presente", icone: "gift" },
+  { label: "Outro", value: "outro", icone: "ellipsis" },
+];
 
 const movimentoGanhoSchema = z.object({
   tituloMovimentacao: z.string().min(3, "Pelo menos 3 caracteres"),
@@ -16,6 +25,7 @@ const movimentoGanhoSchema = z.object({
   descricaoMovimentacao: z.string().nullish(),
   // dataMovimentacao: z.date()
   dataMovimentacao: z.string().min(1, "Selecionar uma data"), // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
+  categoria: z.string().min(1, "Selecione uma categoria"),
 });
 
 type movimentoGanhoFormData = z.infer<typeof movimentoGanhoSchema>;
@@ -82,6 +92,15 @@ export default function GerandoGanho() {
 
             <InputText
               control={control}
+              name="descricaoMovimentacao"
+              label="Descrição"
+              clearErrors={clearErrors}
+              placeholder="Descrição (opcional)"
+              error={errors.descricaoMovimentacao?.message}
+            />
+
+            <InputText
+              control={control}
               name="valorMovimentacao"
               label="Valor"
               clearErrors={clearErrors}
@@ -89,15 +108,6 @@ export default function GerandoGanho() {
               type="real"
               placeholder="Valor"
               error={errors.valorMovimentacao?.message}
-            />
-
-            <InputText
-              control={control}
-              name="descricaoMovimentacao"
-              label="Descrição"
-              clearErrors={clearErrors}
-              placeholder="Descrição (opcional)"
-              error={errors.descricaoMovimentacao?.message}
             />
 
             <InputDate
@@ -109,8 +119,25 @@ export default function GerandoGanho() {
             />
 
             <InputCheckbox
-            label="Recebido"
+            label="Recorrente"
+            size={30}
             />
+
+            <InputCheckbox
+            label="Recebido"
+            size={30}
+            />
+
+            <InputSelect
+            control={control}
+            name="categoria"
+            label="Categoria"
+            titulo="Categoria do ganho"
+            opcoes={categoriasGanho}
+            clearErrors={clearErrors}
+            error={errors.categoria?.message}
+            />
+
           </View>
 
           <View style={styleContainer.botaoSalvar}>

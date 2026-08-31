@@ -1,5 +1,7 @@
 import { SplashScreen, Stack } from "expo-router";
 import { StatusBar } from "react-native";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet";
 import DBProvider from "@/database/sqlite";
 import { colors } from "@/theme/colors";
 import { useFonts } from "expo-font"
@@ -38,11 +40,13 @@ export default function Layout() {
     if (!fontsLoaded) return null;
 
     return (
-        <>
+        <GestureHandlerRootView style={{ flex: 1 }}>
+        <BottomSheetModalProvider>
         <DBProvider>
             <StatusBar barStyle={"light-content"}/>
             <Stack screenOptions={{headerShown: false, contentStyle: {backgroundColor: colors.background}}}/>
         </DBProvider>
-        </>
+        </BottomSheetModalProvider>
+        </GestureHandlerRootView>
     )
 }
