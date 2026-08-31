@@ -19,9 +19,14 @@ export function ActionMovimentacao(){
     const progress = useSharedValue(0)
 
     const abrindoAction = () => {
-        console.log(!actionAberto)
         setActionAberto(!actionAberto)
         progress.value = withTiming(!actionAberto ? 1 : 0, { duration: 200 });
+    }
+
+    const pushRota = (rota: '/gerandoGanho' | '/gerandoGasto') => {
+        setActionAberto(false)
+        progress.value = 0
+        router.push(rota)
     }
 
     const estiloOpcoes = useAnimatedStyle(() => ({
@@ -33,17 +38,21 @@ export function ActionMovimentacao(){
 
     
     return(
+        <>
+        {actionAberto && (
+            <Pressable style={StyleSheet.absoluteFillObject} onPress={abrindoAction}/>
+        )}
         <View style={styleContainer.containerPrincipal}>
             <Animated.View style={[styleContainer.opcoes, estiloOpcoes]} pointerEvents={actionAberto ? "auto" : "none"}>
                 <Pressable
-                onPress={() => {router.push('/gerandoGanho')}}
+                onPress={() => pushRota('/gerandoGanho')}
                 style={[styleContainer.opcaoBotao, {backgroundColor:colors.green}]}
                 >
                     <Text style={[styleContainer.textOpcoes, {fontSize: width * 0.043}]}>Gerar Ganho</Text>
                 </Pressable>
 
                 <Pressable
-                onPress={() => {router.push('/gerandoGasto')}}
+                onPress={() => {pushRota('/gerandoGasto')}}
                 style={[styleContainer.opcaoBotao, {backgroundColor:colors.red}]}
                 >
                     <Text style={[styleContainer.textOpcoes, {fontSize: width * 0.043}]}>Gerar Gasto</Text>
@@ -54,6 +63,7 @@ export function ActionMovimentacao(){
                 <FontAwesome6 name={actionAberto ? "xmark" : "dollar-sign"} color={colors.white} size={width * 0.07}/>
             </Pressable>
         </View>
+        </>
     )
 }
 
@@ -86,8 +96,8 @@ const styleContainer = StyleSheet.create({
         gap: 15
     },
     opcaoBotao: {
-        paddingInline: 16,
-        paddingBlock: 9,
+        paddingInline: 15,
+        paddingBlock: 7.5,
         borderRadius: 100
     },
     textOpcoes: {

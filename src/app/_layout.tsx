@@ -41,7 +41,7 @@ export default function Layout() {
         <>
         <DBProvider>
             <StatusBar barStyle={"light-content"}/>
-            <Stack screenOptions={{headerShown: false}}/>
+            <Stack screenOptions={{headerShown: false, contentStyle: {backgroundColor: colors.background}}}/>
         </DBProvider>
         </>
     )
