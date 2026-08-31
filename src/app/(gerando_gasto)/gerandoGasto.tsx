@@ -79,7 +79,7 @@ export default function GerandoGasto() {
               label="Valor"
               clearErrors={clearErrors}
               keyboardType="numeric"
-              type="number"
+              type="real"
               placeholder="Valor"
               error={errors.valorMovimentacao?.message}
             />

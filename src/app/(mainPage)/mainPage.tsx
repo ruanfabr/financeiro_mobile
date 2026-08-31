@@ -3,11 +3,14 @@ import { ScreenWrapper } from "@/components/ScreenWrapper";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Link } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ActionMovimentacao } from "../../components/ActionMovimentacao";
+import { useFocusEffect } from "@react-navigation/native";
 
 import * as SQLite from "expo-sqlite";
+import { fonts } from "@/theme/typography";
+import { colors } from "@/theme/colors";
 
 type Movimentacoes = {
   id: number;
@@ -29,27 +32,30 @@ export default function MainPage() {
     [],
   );
 
+  /* FUNÇÃO PARA DESCARTAR DEPOIS */
   async function resetarBanco() {
     await db.closeAsync();
     await SQLite.deleteDatabaseAsync("financeiro.db");
   }
 
-  useEffect(() => {
-    async function listaMovimentacoes() {
-      const movimentacoes = await db.getAllAsync<Movimentacoes>(`
-                    SELECT * FROM movimentacoes
-                `);
-
-      setDadosMovimentacoes(movimentacoes);
-    }
-    listaMovimentacoes();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      async function listaMovimentacoes() {
+        const movimentacoes = await db.getAllAsync<Movimentacoes>(`
+                      SELECT * FROM movimentacoes
+                  `);
+  
+        setDadosMovimentacoes(movimentacoes);
+      }
+      listaMovimentacoes();
+    }, [])
+  );
 
   return (
     <ScreenWrapper>
       <View style={{ flex: 1, paddingInline: 13, paddingBlock: 15 }}>
         <View>
-          <Text style={styleContainer.dataResumo}>Agosto 2026</Text>
+          <Text style={styleContainer.dataResumo}>{new Date().toLocaleDateString('pt-BR', {month: 'long', year: 'numeric'}).replace(/\sde\s/g, ' ')}</Text>
         </View>
 
         <View style={styleContainer.containerGeral}>
@@ -66,11 +72,14 @@ export default function MainPage() {
                   justifyContent: "center",
                 }}
               >
-                <FontAwesome6 name="arrow-up" size={20} color="#2a922a" />
+                <FontAwesome6 name="arrow-up" size={20} color={colors.green} />
                 <Text
                   style={[
                     styleContainer.textTitle,
-                    { color: "#2a922a", paddingInline: 13 },
+                    {
+                      // color: "#2a922a",
+                      paddingInline: 13
+                    },
                   ]}
                 >
                   Ganhos
@@ -81,14 +90,15 @@ export default function MainPage() {
                 <Text
                   style={[
                     styleContainer.textTitle,
-                    { color: "#2a922a" },
+                    { color: colors.green },
                     { fontSize: 17 },
                   ]}
                 >
-                  Total{" "}
+                  R${" "}
                   {dadosMovimentacoes
                     .filter((item) => item.tipo_movimentacao === 1)
-                    .reduce((a, item) => a + item.valor, 0)}
+                    .reduce((a, item) => a + item.valor, 0)?.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                    }
                 </Text>
               )}
             </View>
@@ -105,7 +115,7 @@ export default function MainPage() {
                         <FontAwesome6
                           name={dado.icone ? dado.icone : "dollar-sign"}
                           size={21}
-                          color="green"
+                          color={colors.green}
                         />
                       </View>
 
@@ -126,7 +136,7 @@ export default function MainPage() {
                       </View>
 
                       <Text style={styleContainer.textGanho}>
-                        R$ {String(dado.valor).replace(".", ",")}
+                        R$ {dado.valor?.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </Text>
                     </View>
                   );
@@ -146,11 +156,14 @@ export default function MainPage() {
           <View style={styleContainer.containerGastos}>
             <View style={styleContainer.containerTitle}>
               <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <FontAwesome6 name="arrow-down" size={20} color="#c71100" />
+                <FontAwesome6 name="arrow-down" size={20} color={colors.red} />
                 <Text
                   style={[
                     styleContainer.textTitle,
-                    { color: "#c71100", paddingInline: 13 },
+                    { 
+                      // color: "#c71100",
+                      paddingInline: 13
+                    },
                   ]}
                 >
                   Gastos
@@ -160,14 +173,14 @@ export default function MainPage() {
               <Text
                 style={[
                   styleContainer.textTitle,
-                  { color: "#c71100" },
+                  { color: colors.red },
                   { fontSize: 17 },
                 ]}
               >
-                Total{" "}
+                R$ {" "}
                 {dadosMovimentacoes
                   .filter((item) => item.tipo_movimentacao === 2)
-                  .reduce((a, item) => a + item.valor, 0)}
+                  .reduce((a, item) => a + item.valor, 0)?.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </Text>
             </View>
 
@@ -182,8 +195,8 @@ export default function MainPage() {
                       <View style={styleContainer.iconMovimentacaoGasto}>
                         <FontAwesome6
                           name={dado.icone ? dado.icone : "dollar-sign"}
-                          size={21}
-                          color="#b60f00"
+                          size={19}
+                          color={colors.red}
                         />
                       </View>
 
@@ -204,7 +217,7 @@ export default function MainPage() {
                       </View>
 
                       <Text style={styleContainer.textGasto}>
-                        R$ {String(dado.valor).replace(".", ",")}
+                        R$ {dado.valor?.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </Text>
                     </View>
                   );
@@ -213,14 +226,13 @@ export default function MainPage() {
           </View>
         </View>
       </View>
-      <ButtonComponent
+      {/* <ButtonComponent
         label="ver banco"
         onPress={() => console.log("movimentações: ", dadosMovimentacoes)}
       />
+      <ButtonComponent label="deletar table" onPress={resetarBanco} /> */}
       <ActionMovimentacao />
 
-      <ButtonComponent label="deletar table" onPress={resetarBanco} />
-      <ActionMovimentacao />
     </ScreenWrapper>
   );
 }
@@ -228,29 +240,30 @@ export default function MainPage() {
 const styleContainer = StyleSheet.create({
   containerGeral: {
     paddingBlock: 20,
-    gap: 45,
+    gap: 24,
   },
   dataResumo: {
-    fontWeight: "bold",
-    fontSize: 25,
+    fontFamily: fonts.displayBold,
+    color: colors.text,
+    fontSize: 24,
     paddingInline: 10,
     paddingBlock: 5,
   },
   iconMovimentacaoGanho: {
-    width: 43,
+    width: 40,
     paddingInline: 10,
     alignSelf: "center",
-    backgroundColor: "#62f85d",
+    backgroundColor: colors.greenSoft,
     aspectRatio: 1,
     borderRadius: 100,
     alignItems: "center",
     justifyContent: "center",
   },
   iconMovimentacaoGasto: {
-    width: 43,
+    width: 40,
     paddingInline: 10,
     alignSelf: "center",
-    backgroundColor: "#ed5e5e",
+    backgroundColor: colors.redSoft,
     aspectRatio: 1,
     borderRadius: 100,
     alignItems: "center",
@@ -265,16 +278,18 @@ const styleContainer = StyleSheet.create({
     rowGap: 20,
   },
   containerGanhos: {
+    backgroundColor: colors.surface,
     width: "100%",
-    borderRadius: 12,
-    padding: 15,
-    rowGap: 20,
+    borderRadius: 18,
+    padding: 16,
+    rowGap: 16,
   },
   containerGastos: {
+    backgroundColor: colors.surface,
     width: "100%",
-    borderRadius: 12,
-    padding: 15,
-    rowGap: 20,
+    borderRadius: 18,
+    padding: 16,
+    rowGap: 16,
   },
   containerTitle: {
     justifyContent: "space-between",
@@ -286,10 +301,10 @@ const styleContainer = StyleSheet.create({
   },
   containerConteudoOut: {
     flexDirection: "row",
-    backgroundColor: "#e2e2e2",
+    backgroundColor: colors.surfaceRaised,
     paddingBlock: 10,
     paddingInline: 12,
-    borderRadius: 15,
+    borderRadius: 14,
     alignItems: "center",
     width: "100%",
   },
@@ -299,45 +314,48 @@ const styleContainer = StyleSheet.create({
   },
 
   textTitle: {
-    fontWeight: "bold",
-    fontSize: 23,
+    fontFamily: fonts.displaySemiBold,
+    color: colors.text,
+    fontSize: 16,
     textAlign: "center",
   },
   textConteudoTitulo: {
-    fontWeight: "bold",
-    fontSize: 17.5,
+    fontFamily: fonts.bodyBold,
+    color: colors.text,
+    fontSize: 15,
   },
   textConteudoDate: {
+    fontFamily: fonts.bodyMedium,
+    color: colors.textMuted,
     alignSelf: "flex-start",
-    fontWeight: 600,
-    fontSize: 14,
+    fontSize: 12.5,
     width: "auto",
     letterSpacing: 0.2,
   },
   textGanho: {
-    color: "#2a922a",
-    fontSize: 18.5,
-    fontWeight: "bold",
+    fontFamily: fonts.bodyBold,
+    color: colors.green,
+    fontSize: 16,
     textAlign: "right",
     alignSelf: "center",
     flexShrink: 0,
   },
   textGasto: {
-    color: "#c71100",
-    fontSize: 18.5,
-    fontWeight: "bold",
+    fontFamily: fonts.bodyBold,
+    color: colors.red,
+    fontSize: 16,
     textAlign: "right",
     alignSelf: "center",
     flexShrink: 0,
   },
   textVerMaisGanho: {
-    fontWeight: "bold",
-    fontSize: 18,
+    fontFamily: fonts.bodyBold,
+    fontSize: 13,
     justifyContent: "center",
     textAlign: "center",
-    borderTopWidth: 2,
-    borderColor: "#5ab539",
-    paddingTop: 8,
-    color: "#2a922a",
+    borderTopWidth: 1,
+    borderColor: colors.border,
+    paddingTop: 10,
+    color: colors.green,
   },
 });

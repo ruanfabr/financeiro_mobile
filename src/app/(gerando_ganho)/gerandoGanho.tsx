@@ -7,13 +7,15 @@ import { useSQLiteContext } from "expo-sqlite";
 import { useForm } from "react-hook-form";
 import { StyleSheet, Text, View } from "react-native";
 import z from "zod";
+import { HeaderVoltar } from "@/components/HeaderVoltar";
+import { InputDate } from "@/components/input/InputDate";
 
 const movimentoGanhoSchema = z.object({
   tituloMovimentacao: z.string().min(3, "Pelo menos 3 caracteres"),
   valorMovimentacao: z.number().min(0.01, "Valor inválido").nonnegative(),
-  descricaoMovimentacao: z.string(),
+  descricaoMovimentacao: z.string().nullish(),
   // dataMovimentacao: z.date()
-  dataMovimentacao: z.string(), // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
+  dataMovimentacao: z.string().min(1, "Selecionar uma data"), // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
 });
 
 type movimentoGanhoFormData = z.infer<typeof movimentoGanhoSchema>;
@@ -25,11 +27,15 @@ export default function GerandoGanho() {
     control,
     clearErrors,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<movimentoGanhoFormData>({
     resolver: zodResolver(movimentoGanhoSchema),
     mode: "onSubmit",
     reValidateMode: "onSubmit",
+    defaultValues: {
+      dataMovimentacao: String(new Date().toISOString().split('T')[0])
+    }
   });
 
   async function salvarMovimentacao(data: movimentoGanhoFormData) {
@@ -51,7 +57,7 @@ export default function GerandoGanho() {
             `,
       data.tituloMovimentacao,
       data.valorMovimentacao,
-      data.descricaoMovimentacao,
+      data.descricaoMovimentacao? data.descricaoMovimentacao : null,
       data.dataMovimentacao,
       1,
       null,
@@ -61,9 +67,7 @@ export default function GerandoGanho() {
   return (
     <ScreenWrapper>
       <View style={{ flex: 1, paddingInline: 13, paddingBlock: 15 }}>
-        <View>
-          <Text style={styleContainer.tituloPagina}>Gerando Ganho</Text>
-        </View>
+        <HeaderVoltar titulo="Gerando Ganho" />
 
         <View style={styleContainer.conteudoPagina}>
           <View style={styleContainer.containerDadosPrincipais}>
@@ -82,7 +86,7 @@ export default function GerandoGanho() {
               label="Valor"
               clearErrors={clearErrors}
               keyboardType="numeric"
-              type="number"
+              type="real"
               placeholder="Valor"
               error={errors.valorMovimentacao?.message}
             />
@@ -96,21 +100,23 @@ export default function GerandoGanho() {
               error={errors.descricaoMovimentacao?.message}
             />
 
-            <InputText
+            <InputDate
               control={control}
               name="dataMovimentacao"
               label="Data efetuada"
               clearErrors={clearErrors}
-              placeholder="Data efetuada"
               error={errors.dataMovimentacao?.message}
             />
 
-            <InputCheckbox/>
+            <InputCheckbox
+            label="Recebido"
+            />
           </View>
 
           <View style={styleContainer.botaoSalvar}>
             <ButtonComponent
               label="Salvar"
+              variant="green"
               onPress={handleSubmit(salvarMovimentacao)}
             />
           </View>
