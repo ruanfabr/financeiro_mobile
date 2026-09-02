@@ -226,11 +226,13 @@ export default function MainPage() {
           </View>
         </View>
       </View>
-      {/* <ButtonComponent
+      {/*
+      <ButtonComponent
         label="ver banco"
         onPress={() => console.log("movimentações: ", dadosMovimentacoes)}
       />
-      <ButtonComponent label="deletar table" onPress={resetarBanco} /> */}
+      */}
+      <ButtonComponent label="deletar table" onPress={resetarBanco} /> 
       <ActionMovimentacao />
 
     </ScreenWrapper>
