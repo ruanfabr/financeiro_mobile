@@ -1,6 +1,8 @@
 import { ButtonComponent } from "@/components/input/Button";
 import { InputText } from "@/components/input/InputText";
 import { ScreenWrapper } from "@/components/ScreenWrapper";
+import { colors } from "@/theme/colors";
+import { fonts } from "@/theme/typography";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link, useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
@@ -77,14 +79,14 @@ export default function Index() {
                 </Link>
               </Text>
 
-              <Text>
+              <Text style={style.textCadastro}>
                 Pular para{" "}
                 <Link href="/gerandoGanho" style={style.linkCadastro}>
                   pagina trabalhando atual
                 </Link>
               </Text>
 
-              <Text>
+              <Text style={style.textCadastro}>
                 mainPage{" "}
                 <Link href="/mainPage" style={style.linkCadastro}>
                   {" "}
@@ -104,30 +106,33 @@ const style = StyleSheet.create({
     flexGrow: 1,
     justifyContent: "center",
     alignItems: "center",
-    // backgroundColor: "#FDFDFD",
     padding: 32,
     gap: 40,
   },
   formularioLogin: {
-    // backgroundColor: "#789895",
     width: 250,
     gap: 30,
   },
   formularioLoginCampo: {
+    fontFamily: fonts.bodyMedium,
     fontSize: 17,
   },
 
   title: {
-    fontSize: 18,
-    fontWeight: "bold",
+    fontFamily: fonts.displayBold,
+    color: colors.text,
+    fontSize: 20,
+    textAlign: "center"
   },
   textCadastro: {
+    fontFamily: fonts.bodyMedium,
+    color: colors.textMuted,
     textAlign: "center",
     fontSize: 14,
     lineHeight: 22,
   },
   linkCadastro: {
-    color: "#3e5de9",
-    fontWeight: 700,
+    color: colors.purpleStrong,
+    fontFamily: fonts.bodyBold,
   },
 });
