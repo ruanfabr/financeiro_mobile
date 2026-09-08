@@ -40,7 +40,7 @@ export function ActionMovimentacao(){
     return(
         <>
         {actionAberto && (
-            <Pressable style={StyleSheet.absoluteFillObject} onPress={abrindoAction}/>
+            <Pressable style={StyleSheet.absoluteFill} onPress={abrindoAction}/>
         )}
         <View style={styleContainer.containerPrincipal}>
             <Animated.View style={[styleContainer.opcoes, estiloOpcoes]} pointerEvents={actionAberto ? "auto" : "none"}>

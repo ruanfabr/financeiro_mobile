@@ -1,12 +1,11 @@
 import { ButtonComponent } from "@/components/input/Button";
 import { ScreenWrapper } from "@/components/ScreenWrapper";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Link } from "expo-router";
+import { Link, useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ActionMovimentacao } from "../../components/ActionMovimentacao";
-import { useFocusEffect } from "@react-navigation/native";
 
 import * as SQLite from "expo-sqlite";
 import { fonts } from "@/theme/typography";
