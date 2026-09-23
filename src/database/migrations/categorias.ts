@@ -1,7 +1,7 @@
 import { SQLiteDatabase } from "expo-sqlite";
 
 
-export async function categoria(db: SQLiteDatabase) {
+export async function categorias(db: SQLiteDatabase) {
 
     /*
     TIPO_MOVIMENTACAO:

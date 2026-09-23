@@ -12,7 +12,7 @@ type Categorias = {
 }
 
 export default function Categorias() {
-    const [listaCategoria, setListaCategoria] = useState<Categorias[]>([]);
+    const [listaCategorias, setListaCategorias] = useState<Categorias[]>([]);
     const db = useSQLiteContext();
 
     useFocusEffect(
@@ -28,7 +28,7 @@ export default function Categorias() {
                     FROM financeiro.categorias
                     `
                 )
-                setListaCategoria(listaCategorias)
+                setListaCategorias(listaCategorias)
             }
             definindoListaCategoria();
         }, [])
@@ -37,7 +37,7 @@ export default function Categorias() {
     return (
         <>
         {
-            listaCategoria?
+            listaCategorias?
             <>
             <View>
                 <Text>
