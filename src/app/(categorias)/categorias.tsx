@@ -57,7 +57,7 @@ export default function Categorias() {
                     `
                 )
                 console.log(dataListaCategorias)
-                setListaCategoria(dataListaCategorias)
+                setListaCategorias(dataListaCategorias)
             }
             definindoListaCategoria();
         }, [])
@@ -75,7 +75,7 @@ export default function Categorias() {
 
     function cardCategoria() {
         return (
-                listaCategoria.map((item) => {
+                listaCategorias.map((item) => {
                 return (
                     <View>
                         <Text>
@@ -93,7 +93,7 @@ export default function Categorias() {
         <View style={{ flex: 1, paddingInline: 13, paddingBlock: 15 }}>
             <HeaderVoltar titulo="Categorias"/>
         {
-            listaCategoria && listaCategoria.length > 0?
+            listaCategorias && listaCategorias.length > 0?
             cardCategoria()
             :
             visualListaVazia()
