@@ -1,11 +1,11 @@
 import { movimentoParcelado } from "./movimento_parcelado";
 import { movimentoRecorrente } from "./movimento_recorrente";
-import { categoria } from "./categorias";
+import { categorias } from "./categorias";
 import { SQLiteDatabase } from "expo-sqlite";
 import { movimentacoes } from "./movimentacoes";
 
 const migrations = [
-    categoria,
+    categorias,
     movimentacoes,
     movimentoParcelado,
     movimentoRecorrente

@@ -29,7 +29,7 @@ type Categorias = {
 type categoriaFormData = z.infer<typeof categoriaSchema>;
 
 export default function Categorias() {
-    const [listaCategoria, setListaCategoria] = useState<Categorias[]>([]);
+    const [listaCategorias, setListaCategorias] = useState<Categorias[]>([]);
     const db = useSQLiteContext();
     const {
         control,
