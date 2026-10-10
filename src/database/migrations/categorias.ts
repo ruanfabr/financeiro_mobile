@@ -14,6 +14,7 @@ export async function categoria(db: SQLiteDatabase) {
             id INTEGER PRIMARY KEY AUTOINCREMENT
             ,descricao_categoria TEXT NOT NULL
             ,tipo_movimentacao CHAR NOT NULL
+            ,icone VARCHAR(50)
             ,criada_em DATETIME DEFAULT CURRENT_TIMESTAMP NOT NULL
         )
         `)

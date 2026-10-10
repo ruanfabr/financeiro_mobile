@@ -34,7 +34,7 @@ export default function MainPage() {
   /* FUNÇÃO PARA DESCARTAR DEPOIS */
   async function resetarBanco() {
     await db.closeAsync();
-    await SQLite.deleteDatabaseAsync("financeiro.db");
+    await SQLite.deleteDatabaseAsync("financeiro");
   }
 
   useFocusEffect(
@@ -225,12 +225,12 @@ export default function MainPage() {
           </View>
         </View>
       </View>
-      {/*
+      
       <ButtonComponent
         label="ver banco"
         onPress={() => console.log("movimentações: ", dadosMovimentacoes)}
       />
-      */}
+     
       <ButtonComponent label="deletar table" onPress={resetarBanco} /> 
       <ActionMovimentacao />
 
