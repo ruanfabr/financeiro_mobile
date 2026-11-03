@@ -1,12 +1,11 @@
 import { ButtonComponent } from "@/components/input/Button";
 import { ScreenWrapper } from "@/components/ScreenWrapper";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Link } from "expo-router";
+import { Link, useFocusEffect } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useEffect, useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import { ActionMovimentacao } from "../../components/ActionMovimentacao";
-import { useFocusEffect } from "@react-navigation/native";
 
 import * as SQLite from "expo-sqlite";
 import { fonts } from "@/theme/typography";
@@ -35,7 +34,7 @@ export default function MainPage() {
   /* FUNÇÃO PARA DESCARTAR DEPOIS */
   async function resetarBanco() {
     await db.closeAsync();
-    await SQLite.deleteDatabaseAsync("financeiro.db");
+    await SQLite.deleteDatabaseAsync("financeiro");
   }
 
   useFocusEffect(
@@ -226,11 +225,13 @@ export default function MainPage() {
           </View>
         </View>
       </View>
-      {/* <ButtonComponent
+      
+      <ButtonComponent
         label="ver banco"
         onPress={() => console.log("movimentações: ", dadosMovimentacoes)}
       />
-      <ButtonComponent label="deletar table" onPress={resetarBanco} /> */}
+     
+      <ButtonComponent label="deletar table" onPress={resetarBanco} /> 
       <ActionMovimentacao />
 
     </ScreenWrapper>
