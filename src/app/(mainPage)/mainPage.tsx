@@ -53,7 +53,7 @@ export default function MainPage() {
 
   return (
     <ScreenWrapper>
-      <View style={{ flex: 1, paddingInline: 13, paddingBlock: 15 }}>
+      <View style={{ flex: 1, paddingInline: 15, paddingBlock: 15 }}>
         <View>
           <Text style={styleContainer.dataResumo}>{new Date().toLocaleDateString('pt-BR', {month: 'long', year: 'numeric'}).replace(/\sde\s/g, ' ')}</Text>
         </View>

@@ -27,7 +27,7 @@ const styleContainer = StyleSheet.create({
     linha: {
         flexDirection: "row",
         alignItems: "center",
-        gap: 12,
+        gap: 16,
         paddingBlock: 8
     },
     botaoVoltar: {
@@ -39,8 +39,9 @@ const styleContainer = StyleSheet.create({
         justifyContent: "center"
     },
     titulo: {
-        fontFamily: fonts.displayBold,
+        fontFamily: fonts.displayExtraBold,
         color: colors.text,
-        fontSize: 24
+        fontSize: 24,
+        letterSpacing:1.1
     }
 })

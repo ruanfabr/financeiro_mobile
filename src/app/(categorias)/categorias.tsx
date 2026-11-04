@@ -90,7 +90,7 @@ export default function Categorias() {
 
     return (
         <ScreenWrapper>
-        <View style={{ flex: 1, paddingInline: 13, paddingBlock: 15 }}>
+        <View style={{ flex: 1, paddingInline: 15, paddingBlock: 15 }}>
             <HeaderVoltar titulo="Categorias"/>
         {
             listaCategorias && listaCategorias.length > 0?

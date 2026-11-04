@@ -76,7 +76,7 @@ export default function GerandoGanho() {
 
   return (
     <ScreenWrapper>
-      <View style={{ flex: 1, paddingInline: 13, paddingBlock: 15 }}>
+      <View style={{ flex: 1, paddingInline: 15, paddingBlock: 15 }}>
         <HeaderVoltar titulo="Gerando Ganho" />
 
         <View style={styleContainer.conteudoPagina}>
