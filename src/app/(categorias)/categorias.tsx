@@ -88,6 +88,10 @@ export default function Categorias() {
         )
     }
 
+    function clickAdicionarCategoria() {
+        console.log('adicionei categoria')
+    }
+
     return (
         <ScreenWrapper>
         <View style={{ flex: 1, paddingInline: 13, paddingBlock: 15 }}>
@@ -99,9 +103,13 @@ export default function Categorias() {
             visualListaVazia()
         }
 
-        <Pressable style={styleContainer.btAdicionarCategoria}>
-            <FontAwesome6 name="plus" size={width * 0.06}/>
-        </Pressable>
+        <View style={styleContainer.viewBtCategoria}>
+            
+
+            <Pressable style={[styleContainer.btAdicionarCategoria, {width: width * 0.15}, {borderRadius: 30}]} onPress={clickAdicionarCategoria}>
+                <FontAwesome6 name="plus" style={[]} size={width * 0.09}/>
+            </Pressable>
+        </View>
 
         </View>
         </ScreenWrapper>
@@ -114,14 +122,25 @@ const styleContainer = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center'
     },
+
     listaVaziaText: {
         color: colors.text,
         fontFamily: fonts.displayBold
     },
 
     btAdicionarCategoria: {
-        backgroundColor: colors.background,
-        paddingBlock: 7.5,
-        paddingInline: 15
+        backgroundColor: colors.purple,
+        paddingBlock: 9,
+        paddingInline: 15,
+        alignContent: 'center',
+        justifyContent: 'center',
+        aspectRatio: 1,
+        elevation: 6
+    },
+
+    viewBtCategoria: {
+        position: 'absolute',
+        bottom: 20,
+        right: 18,
     }
 })
