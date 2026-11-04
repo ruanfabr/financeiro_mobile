@@ -1,10 +1,10 @@
 import { ButtonComponent } from "@/components/input/Button";
 import { ScreenWrapper } from "@/components/ScreenWrapper";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
-import { Link, useFocusEffect } from "expo-router";
+import { Link, useFocusEffect, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
-import { useCallback, useEffect, useState } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { useCallback, useState } from "react";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 import { ActionMovimentacao } from "../../components/ActionMovimentacao";
 
 import * as SQLite from "expo-sqlite";
@@ -26,6 +26,7 @@ type Movimentacoes = {
 };
 
 export default function MainPage() {
+  const router = useRouter()
   const db = useSQLiteContext();
   const [dadosMovimentacoes, setDadosMovimentacoes] = useState<Movimentacoes[]>(
     [],
@@ -106,8 +107,14 @@ export default function MainPage() {
               {dadosMovimentacoes.map((dado) => {
                 if (dado.tipo_movimentacao == 1)
                   return (
+                    <Pressable onPress={() => router.push({
+                      pathname: '/(detalhe_movimento)/verMovimentoDetalhado',
+                      params: {
+                              id: dado.id
+                              }
+                      })}
+                      key={dado.id}>
                     <View
-                      key={dado.id}
                       style={styleContainer.containerConteudoOut}
                     >
                       <View style={styleContainer.iconMovimentacaoGanho}>
@@ -138,6 +145,7 @@ export default function MainPage() {
                         R$ {dado.valor?.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </Text>
                     </View>
+                    </Pressable>
                   );
               })}
             </View>
@@ -187,6 +195,7 @@ export default function MainPage() {
               {dadosMovimentacoes.map((dado) => {
                 if (dado.tipo_movimentacao == 2)
                   return (
+                    <Pressable onPress={() => console.log('pressionado')}>
                     <View
                       key={dado.id}
                       style={styleContainer.containerConteudoOut}
@@ -219,6 +228,7 @@ export default function MainPage() {
                         R$ {dado.valor?.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
                       </Text>
                     </View>
+                    </Pressable>
                   );
               })}
             </View>

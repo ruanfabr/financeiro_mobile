@@ -12,6 +12,8 @@
   - [ ] Ação de excluir categoria
   - [ ] Editar informações da categoria
 
+- [ ] Ocultar tela de login e pular para mainPage
+
 ## Feito
 
 - [x] Lista básica de ganhos e gastos
