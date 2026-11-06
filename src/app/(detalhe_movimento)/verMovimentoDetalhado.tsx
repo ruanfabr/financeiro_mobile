@@ -117,6 +117,9 @@ export default function VerMovimentoDetalhado() {
                 <Text style={styleContainer.descCard}>
                     Recorrência
                 </Text>
+                <Text>
+                    {dadosMovimento?.recorrente == 0? "Única" : "Sim"}
+                </Text>
             </View>
 
             <View style={[styleContainer.innerContainerBloco, {width: '100%'}]}>
