@@ -103,6 +103,9 @@ export default function VerMovimentoDetalhado() {
                 <Text style={styleContainer.descCard}>
                     Data
                 </Text>
+                <Text style={styleContainer.valorCard}>
+                    {dadosMovimento?.data_emitida}
+                </Text>
             </View>
 
             <View style={styleContainer.innerContainerBloco}>
@@ -195,11 +198,16 @@ const styleContainer = StyleSheet.create({
         backgroundColor: colors.surfaceRaised,
         borderRadius: 12,
         paddingInline: 14,
-        paddingBlock: 12
+        paddingBlock: 12,
+        gap: 5
     },
     descCard: {
         color: colors.textFaint,
         fontFamily: fonts.bodyBold,
         fontSize: 14
+    },
+    valorCard: {
+        color: colors.text,
+        fontFamily: fonts.bodyBold
     }
 })
