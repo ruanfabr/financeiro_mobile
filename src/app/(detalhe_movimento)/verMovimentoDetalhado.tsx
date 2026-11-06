@@ -35,7 +35,7 @@ type localSearch = {
 }
 
 
-export default function verMovimentoDetalhado() {
+export default function VerMovimentoDetalhado() {
     const { id } = useLocalSearchParams<localSearch>();
     const db = useSQLiteContext();
     const { width } = useWindowDimensions()
@@ -72,11 +72,12 @@ export default function verMovimentoDetalhado() {
         <ScreenWrapper>
         <View style={{ flex: 1, paddingInline: 15, paddingBlock: 15}}>
         <HeaderVoltar titulo="Detalhe"/>
+
             <View style={styleContainer.headerMovimentacao}>
                 <View style={[styleContainer.iconMovimento, {backgroundColor: dadosMovimento?.tipo_movimentacao == 1? colors.greenSoft : colors.redSoft}]}>
                     <FontAwesome6
                     name={dadosMovimento?.icone || "dollar-sign"}
-                    size={width * 0.12}
+                    size={width * 0.1}
                     color={dadosMovimento?.tipo_movimentacao == 1? colors.green : colors.red}
                     />
                 </View>
@@ -86,9 +87,54 @@ export default function verMovimentoDetalhado() {
             </View>
 
             <View style={[styleContainer.valorMovimentacao, {backgroundColor: dadosMovimento?.tipo_movimentacao == 1? colors.greenSoft : colors.redSoft}]}>
-                <Text>
-                    {dadosMovimento?.valor}
+                <Text style={[styleContainer.valorMovimentacaoText, {color: dadosMovimento?.tipo_movimentacao == 1 ? colors.green : colors.red}]}>
+                    R$ {dadosMovimento?.valor.toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                 </Text>
+            </View>
+
+            <View style={styleContainer.bodyBlocos}>
+
+            <View style={styleContainer.innerContainerBloco}>
+                <FontAwesome6
+                name={'clock'}
+                size={width * 0.05}
+                color={colors.purple}
+                />
+                <Text style={styleContainer.descCard}>
+                    Data
+                </Text>
+            </View>
+
+            <View style={styleContainer.innerContainerBloco}>
+                <FontAwesome6
+                name={'repeat'}
+                size={width * 0.05}
+                color={colors.purple}
+                />
+                <Text style={styleContainer.descCard}>
+                    Recorrência
+                </Text>
+            </View>
+
+            <View style={[styleContainer.innerContainerBloco, {width: '100%'}]}>
+                <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+                    <Text style={styleContainer.descCard}>
+                        Parcelas
+                    </Text>
+
+                    <Text style={styleContainer.descCard}>
+                        numero parcelas
+                    </Text>
+                </View>
+
+            </View>
+
+            <View style={[styleContainer.innerContainerBloco, {width: '100%'}]}>
+                <Text style={styleContainer.descCard}>
+                    Descrição
+                </Text>
+            </View>
+
             </View>
         </View>
         </ScreenWrapper>
@@ -102,7 +148,7 @@ const styleContainer = StyleSheet.create({
         flexDirection: "row",
         // padding: 15,
         paddingBlock: 20,
-        gap: 18,
+        gap: 12,
         alignContent: 'center',
         alignItems: 'center'
     },
@@ -110,13 +156,13 @@ const styleContainer = StyleSheet.create({
         paddingInline: 20,
         borderRadius: 100,
         aspectRatio: 1,
-        width: 70,
+        width: 65,
         alignSelf: "center",
         justifyContent: "center"
     },
     headerTitulo: {
-        color: colors.white,
-        fontSize: 22,
+        color: colors.text,
+        fontSize: 24.5,
         alignSelf: "flex-start",
         fontFamily: fonts.displaySemiBold
     },
@@ -124,7 +170,36 @@ const styleContainer = StyleSheet.create({
 
     valorMovimentacao: {
         borderRadius: 15,
-        paddingInline: 15,
-        paddingBlock: 18
+        paddingInline: 17,
+        paddingBlock: 18,
+        borderWidth: 1.5,
+        borderColor: colors.greenLine,
+        marginBlock: 10
+    },
+
+    valorMovimentacaoText: {
+        fontSize: 28,
+        fontFamily: fonts.displaySemiBold
+    },
+
+    bodyBlocos: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        gap: 10,
+        rowGap: 15,
+        marginBlock: 10
+    },
+    innerContainerBloco: {
+        width: '48%',
+        backgroundColor: colors.surfaceRaised,
+        borderRadius: 12,
+        paddingInline: 14,
+        paddingBlock: 12
+    },
+    descCard: {
+        color: colors.textFaint,
+        fontFamily: fonts.bodyBold,
+        fontSize: 14
     }
 })
