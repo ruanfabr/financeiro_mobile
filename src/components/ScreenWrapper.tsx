@@ -15,7 +15,7 @@ export function ScreenWrapper({ children }: { children: React.ReactNode }) {
         keyboardVerticalOffset={Platform.OS == 'ios' ? 64 : 0}
         >
             <Pressable onPress={Keyboard.dismiss}
-            style={{ flexGrow: 1, backgroundColor: colors.background }}
+            style={{ flexGrow: 1, backgroundColor: colors.background, padding: 1.6 }}
             >
                 {children}
             </Pressable>

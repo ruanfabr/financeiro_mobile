@@ -3,10 +3,11 @@ import { ScreenWrapper } from "@/components/ScreenWrapper";
 import { colors } from "@/theme/colors";
 import { fonts } from "@/theme/typography";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useFocusEffect, useLocalSearchParams } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
-import { useCallback, useState } from "react";
-import { StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { useCallback, useMemo, useRef, useState } from "react";
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 
 
 type Movimentacoes = {
@@ -36,6 +37,21 @@ type localSearch = {
 
 
 export default function VerMovimentoDetalhado() {
+    const sheetRef = useRef<BottomSheetModal>(null)
+    const snapPoints = useMemo(() => ["55%"], [])
+    const renderBackdrop = useCallback(
+        (props: BottomSheetBackdropProps) => (
+            <BottomSheetBackdrop
+            {...props}
+            appearsOnIndex={0}
+            disappearsOnIndex={-1}
+            opacity={0.55}
+            pressBehavior="close"
+            />
+        ),
+        []
+    )
+
     const { id } = useLocalSearchParams<localSearch>();
     const db = useSQLiteContext();
     const { width } = useWindowDimensions()
@@ -71,7 +87,7 @@ export default function VerMovimentoDetalhado() {
     return (
         <ScreenWrapper>
         <View style={{ flex: 1, paddingInline: 15, paddingBlock: 15}}>
-        <HeaderVoltar titulo="Detalhe"/>
+        <HeaderVoltar titulo="Detalhe" pressOpcoes={() => sheetRef.current?.present()}/>
 
             <View style={styleContainer.headerMovimentacao}>
                 <View style={[styleContainer.iconMovimento, {backgroundColor: dadosMovimento?.tipo_movimentacao == 1? colors.greenSoft : colors.redSoft}]}>
@@ -117,7 +133,7 @@ export default function VerMovimentoDetalhado() {
                 <Text style={styleContainer.descCard}>
                     Recorrência
                 </Text>
-                <Text>
+                <Text style={styleContainer.valorCard}>
                     {dadosMovimento?.recorrente == 0? "Única" : "Sim"}
                 </Text>
             </View>
@@ -127,25 +143,78 @@ export default function VerMovimentoDetalhado() {
                     <Text style={styleContainer.descCard}>
                         Parcelas
                     </Text>
-
-                    <Text style={styleContainer.descCard}>
-                        numero parcelas
-                    </Text>
+                    {
+                        dadosMovimento?.qtd_parcelas || 0 > 0? (
+                        <View>
+                            <Text style={styleContainer.descCard}>
+                                numero parcelas
+                            </Text>
+                        </View>
+                        ):(
+                        <View>
+                            <Text style={styleContainer.descCard}>
+                                Não há parcelas
+                            </Text>
+                        </View>
+                        )
+                    }
                 </View>
 
             </View>
 
-            <View style={[styleContainer.innerContainerBloco, {width: '100%'}]}>
-                <Text style={styleContainer.descCard}>
-                    Descrição
-                </Text>
+            {
+                dadosMovimento?.descricao?
+
+                <View style={[styleContainer.innerContainerBloco, {width: '100%'}]}>
+                    <Text style={styleContainer.descCard}>
+                        Descrição
+                    </Text>
+
+                    <Text style={styleContainer.valorCard}>
+
+                        {dadosMovimento.descricao}
+                    </Text>
+                </View>
+                :
+                null
+            }
             </View>
 
-            </View>
         </View>
+
+        {upModal()}
         </ScreenWrapper>
     )
+
+
+    function upModal() {
+        return(
+            <BottomSheetModal
+            ref={sheetRef}
+            snapPoints={snapPoints}
+            backdropComponent={renderBackdrop}
+            backgroundStyle={{backgroundColor: colors.surface}}
+            handleIndicatorStyle={{backgroundColor: colors.border,
+        width: 40}}
+            >
+                <BottomSheetView style={{paddingInline: 18,paddingBottom: 40, paddingTop: 15, gap: 35}}>
+                    <Pressable onPress={() => console.log('Editar')}>
+                        <Text style={[styleContainer.textoOpcoes, {color: colors.text}]}>
+                            Editar movimentação
+                        </Text>
+                    </Pressable>
+
+                    <Pressable onPress={() => console.log('Excluir')}>
+                        <Text style={[styleContainer.textoOpcoes, {color: colors.red}]}>
+                            Excluir movimentação
+                        </Text>
+                    </Pressable>
+                </BottomSheetView>
+            </BottomSheetModal>
+        )
+    }
 }
+
 
 
 const styleContainer = StyleSheet.create({
@@ -212,5 +281,11 @@ const styleContainer = StyleSheet.create({
     valorCard: {
         color: colors.text,
         fontFamily: fonts.bodyBold
+    },
+
+
+    textoOpcoes: {
+        fontFamily: fonts.bodyBold,
+        fontSize: 16
     }
 })
