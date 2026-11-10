@@ -35,7 +35,6 @@ type localSearch = {
     id: string;
 }
 
-
 export default function VerMovimentoDetalhado() {
     const sheetRef = useRef<BottomSheetModal>(null)
     const snapPoints = useMemo(() => ["24.5%"], [])
@@ -84,27 +83,44 @@ export default function VerMovimentoDetalhado() {
         }, []) 
     )
 
+    async function excluirMovimento(id: number) {
+        console.log('eae')
+        await db.runAsync(
+            `
+            DELETE FROM movimentacoes
+            WHERE id = ?
+            `,
+            id
+        )
+        .then(() => {
+            sheetRef.current?.dismiss()
+            router.back()
+        })
+        .catch((err) => console.log(err))
+    }
+
+    if (dadosMovimento)
     return (
         <ScreenWrapper>
         <View style={{ flex: 1, paddingInline: 15, paddingBlock: 15}}>
         <HeaderVoltar titulo="Detalhe" pressOpcoes={() => sheetRef.current?.present()}/>
 
             <View style={styleContainer.headerMovimentacao}>
-                <View style={[styleContainer.iconMovimento, {backgroundColor: dadosMovimento?.tipo_movimentacao == 1? colors.greenSoft : colors.redSoft}]}>
+                <View style={[styleContainer.iconMovimento, {backgroundColor: dadosMovimento.tipo_movimentacao == 1? colors.greenSoft : colors.redSoft}]}>
                     <FontAwesome6
-                    name={dadosMovimento?.icone || "dollar-sign"}
+                    name={dadosMovimento.icone || "dollar-sign"}
                     size={width * 0.1}
-                    color={dadosMovimento?.tipo_movimentacao == 1? colors.green : colors.red}
+                    color={dadosMovimento.tipo_movimentacao == 1? colors.green : colors.red}
                     />
                 </View>
                 <Text style={styleContainer.headerTitulo}>
-                    {dadosMovimento?.titulo}
+                    {dadosMovimento.titulo}
                 </Text>
             </View>
 
-            <View style={[styleContainer.valorMovimentacao, {backgroundColor: dadosMovimento?.tipo_movimentacao == 1? colors.greenSoft : colors.redSoft}]}>
-                <Text style={[styleContainer.valorMovimentacaoText, {color: dadosMovimento?.tipo_movimentacao == 1 ? colors.green : colors.red}]}>
-                    R$ {dadosMovimento?.valor.toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}
+            <View style={[styleContainer.valorMovimentacao, {backgroundColor: dadosMovimento.tipo_movimentacao == 1? colors.greenSoft : colors.redSoft}]}>
+                <Text style={[styleContainer.valorMovimentacaoText, {color: dadosMovimento.tipo_movimentacao == 1 ? colors.green : colors.red}]}>
+                    R$ {dadosMovimento.valor.toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                 </Text>
             </View>
 
@@ -120,7 +136,7 @@ export default function VerMovimentoDetalhado() {
                     Data
                 </Text>
                 <Text style={styleContainer.valorCard}>
-                    {dadosMovimento?.data_emitida}
+                    {dadosMovimento.data_emitida}
                 </Text>
             </View>
 
@@ -134,7 +150,7 @@ export default function VerMovimentoDetalhado() {
                     Recorrência
                 </Text>
                 <Text style={styleContainer.valorCard}>
-                    {dadosMovimento?.recorrente == 0? "Única" : "Sim"}
+                    {dadosMovimento.recorrente == 0? "Única" : "Sim"}
                 </Text>
             </View>
 
@@ -144,7 +160,7 @@ export default function VerMovimentoDetalhado() {
                         Parcelas
                     </Text>
                     {
-                        dadosMovimento?.qtd_parcelas || 0 > 0? (
+                        dadosMovimento.qtd_parcelas || 0 > 0? (
                         <View>
                             <Text style={styleContainer.descCard}>
                                 numero parcelas
@@ -163,7 +179,7 @@ export default function VerMovimentoDetalhado() {
             </View>
 
             {
-                dadosMovimento?.descricao?
+                dadosMovimento.descricao?
 
                 <View style={[styleContainer.innerContainerBloco, {width: '100%'}]}>
                     <Text style={styleContainer.descCard}>
@@ -188,6 +204,7 @@ export default function VerMovimentoDetalhado() {
 
 
     function upModal() {
+        if (dadosMovimento)
         return(
             <BottomSheetModal
             ref={sheetRef}
@@ -203,9 +220,9 @@ export default function VerMovimentoDetalhado() {
                     <Pressable style={styleContainer.btOpcoes} onPress={() => {
 
                         router.push({
-                        pathname: dadosMovimento?.tipo_movimentacao == 1? '/(gerando_ganho)/gerandoGanho' : '/(gerando_gasto)/gerandoGasto',
+                        pathname: dadosMovimento.tipo_movimentacao == 1? '/(gerando_ganho)/gerandoGanho' : '/(gerando_gasto)/gerandoGasto',
                         params: {
-                            id: dadosMovimento?.id
+                            id: dadosMovimento.id
                         }
                         })
                         sheetRef.current?.dismiss()
@@ -219,7 +236,7 @@ export default function VerMovimentoDetalhado() {
                         </Text>
                     </Pressable>
 
-                    <Pressable style={styleContainer.btOpcoes} onPress={() => console.log('Excluir')}>
+                    <Pressable style={styleContainer.btOpcoes} onPress={() => excluirMovimento(dadosMovimento.id)}>
                         <View style={[styleContainer.iconOpcoes, {backgroundColor: colors.redSoft}]}>
                             <FontAwesome6 name="trash" size={width * 0.05} color={colors.red} />
                         </View>
