@@ -10,6 +10,8 @@ import z from "zod";
 import { HeaderVoltar } from "@/components/HeaderVoltar";
 import { InputDate } from "@/components/input/InputDate";
 import { InputSelect } from "@/components/input/InputSelect";
+import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useCallback } from "react";
 
 const categoriasGanho = [
   { label: "Salário", value: "salario", icone: "sack-dollar" },
@@ -30,8 +32,27 @@ const movimentoGanhoSchema = z.object({
 
 type movimentoGanhoFormData = z.infer<typeof movimentoGanhoSchema>;
 
+type Movimentacoes = {
+    id: number;
+    titulo: string;
+    valor: number;
+    descricao: string | null;
+    data_emitida: string;
+    categoria: number | null;
+    recorrente: number;
+    qtd_parcelas: number;
+    status_movimentacao: string;
+    tipo_movimentacao: number;
+    icone: string | null;
+}
+
+type localSearch = {
+  id: string;
+}
+
 export default function GerandoGanho() {
   const db = useSQLiteContext();
+  const { id } = useLocalSearchParams<localSearch>();
 
   const {
     control,
@@ -48,23 +69,55 @@ export default function GerandoGanho() {
     }
   });
 
+  useFocusEffect(
+    useCallback(() => {
+      if (!id) return
+      async function verMovimentoGanho() {
+              const movimento = await db.getFirstAsync<Movimentacoes>(`
+                  SELECT
+                      id,
+                      titulo,
+                      valor,
+                      descricao,
+                      data_emitida,
+                      categoria,
+                      recorrente,
+                      qtd_parcelas,
+                      status_movimentacao,
+                      tipo_movimentacao,
+                      icone
+                  FROM movimentacoes
+                  WHERE id = ?
+                  `, [id]);
+
+                  reset({
+                    tituloMovimentacao: movimento?.titulo,
+                    descricaoMovimentacao: movimento?.descricao,
+                    dataMovimentacao: movimento?.data_emitida,
+                    // categoria: movimento?.categoria,
+                    valorMovimentacao: movimento?.valor
+                  })
+                }
+          verMovimentoGanho();
+    }, [])
+  )
+
   async function salvarMovimentacao(data: movimentoGanhoFormData) {
-    console.log(data);
     await db.runAsync(
       `
-            INSERT INTO movimentacoes (
-            titulo,
-            valor,
-            descricao,
-            data_emitida,
-            tipo_movimentacao,
-            icone
-            )
-            values
-            (
-            ?,?,?,?,?,?
-            )
-            `,
+      INSERT INTO movimentacoes (
+        titulo,
+        valor,
+        descricao,
+        data_emitida,
+        tipo_movimentacao,
+        icone
+      )
+      values
+      (
+        ?,?,?,?,?,?
+      )
+      `,
       data.tituloMovimentacao,
       data.valorMovimentacao,
       data.descricaoMovimentacao? data.descricaoMovimentacao : null,
@@ -74,10 +127,30 @@ export default function GerandoGanho() {
     );
   }
 
+  async function editarMovimentacao(data: movimentoGanhoFormData) {
+    await db.runAsync(
+      `
+      UPDATE movimentacoes SET
+        titulo = ?
+        valor = ?,
+        descricao = ?,
+        data_emitida = ?,
+        tipo_movimentacao = ?,
+        icone = ?
+      `,
+      data.tituloMovimentacao,
+      data.valorMovimentacao,
+      data.descricaoMovimentacao? data.descricaoMovimentacao : null,
+      data.dataMovimentacao,
+      1,
+      null,
+    )
+  }
+
   return (
     <ScreenWrapper>
-      <View style={{ flex: 1, paddingInline: 13, paddingBlock: 15 }}>
-        <HeaderVoltar titulo="Gerando Ganho" />
+      <View style={{ flex: 1, paddingInline: 15, paddingBlock: 15 }}>
+        <HeaderVoltar titulo={!id? "Gerando Ganho" : "Editar Ganho"} />
 
         <View style={styleContainer.conteudoPagina}>
           <View style={styleContainer.containerDadosPrincipais}>
@@ -142,9 +215,9 @@ export default function GerandoGanho() {
 
           <View style={styleContainer.botaoSalvar}>
             <ButtonComponent
-              label="Salvar"
+              label={!id? "Salvar":"Editar"}
               variant="green"
-              onPress={handleSubmit(salvarMovimentacao)}
+              onPress={() => handleSubmit(salvarMovimentacao)}
             />
           </View>
         </View>

@@ -69,7 +69,7 @@ export default function Index() {
             <View style={{ gap: 15 }}>
               <ButtonComponent
                 label="Login"
-                onPress={handleSubmit(handleSignIn)}
+                onPress={() => handleSubmit(handleSignIn)}
               />
 
               <Text style={style.textCadastro}>
