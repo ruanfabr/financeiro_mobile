@@ -14,8 +14,10 @@
 
 - [ ] Ocultar tela de login e pular para mainPage
 
-- [ ] Consertar gerar ganhos
+- [ ] Consertar/incrementar gerar ganhos
   - [ ] sair da tela após salvar (e ver também um toast pra notificar da ação)
+  - [ ] mais dados de movimentações (como ícone, etc...)
+  - [ ] ajeitar botões (recorrente e recebido) que não estão sendo salvos
 
 - [ ] Atualizar o gerando gastos
   - [ ] adicionar header

@@ -126,7 +126,7 @@ export default function GerandoGasto() {
           <View style={styleContainer.botaoSalvar}>
             <ButtonComponent
               label="Salvar"
-              onPress={handleSubmit(salvarMovimentacao)}
+              onPress={() => handleSubmit(salvarMovimentacao)}
             />
           </View>
         </View>
