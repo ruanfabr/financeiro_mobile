@@ -41,8 +41,6 @@ npx expo start --tunnel
 
 Depois, leia o QR Code com o Expo Go. O `--tunnel` permite conectar o celular mesmo quando ele não está na mesma rede que o computador.
 
-> O `.npmrc` tem `legacy-peer-deps=true` de propósito: o `@react-native-community/datetimepicker` tem um conflito de peer dependency com o `react-native-windows`.
-
 Para instalar uma biblioteca nova, use sempre `npx expo install <lib>`. Esse comando escolhe a versão compatível com o SDK do Expo.
 
 ## Estrutura
