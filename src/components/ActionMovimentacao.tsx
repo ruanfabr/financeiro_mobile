@@ -22,8 +22,8 @@ export function ActionMovimentacao(){
         setActionAberto(!actionAberto)
         progress.value = withTiming(!actionAberto ? 1 : 0, { duration: 200 });
     }
-
-    const pushRota = (rota: '/gerandoGanho' | '/gerandoGasto') => {
+    
+    const pushRota = (rota: '/gerandoGanho' | '/gerandoGasto' | '/categorias' ) => {
         setActionAberto(false)
         progress.value = 0
         router.push(rota)
@@ -40,7 +40,7 @@ export function ActionMovimentacao(){
     return(
         <>
         {actionAberto && (
-            <Pressable style={StyleSheet.absoluteFillObject} onPress={abrindoAction}/>
+            <Pressable style={StyleSheet.absoluteFill} onPress={abrindoAction}/>
         )}
         <View style={styleContainer.containerPrincipal}>
             <Animated.View style={[styleContainer.opcoes, estiloOpcoes]} pointerEvents={actionAberto ? "auto" : "none"}>
@@ -56,6 +56,13 @@ export function ActionMovimentacao(){
                 style={[styleContainer.opcaoBotao, {backgroundColor:colors.red}]}
                 >
                     <Text style={[styleContainer.textOpcoes, {fontSize: width * 0.043}]}>Gerar Gasto</Text>
+                </Pressable>
+
+                <Pressable
+                onPress={() => {pushRota('/categorias')}}
+                style={[styleContainer.opcaoBotao, {backgroundColor:'#5732be'}]}
+                >
+                    <Text style={[styleContainer.textOpcoes, {fontSize: width * 0.043}]}>Categorias</Text>
                 </Pressable>
             </Animated.View>
 
