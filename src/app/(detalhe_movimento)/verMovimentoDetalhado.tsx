@@ -4,7 +4,7 @@ import { colors } from "@/theme/colors";
 import { fonts } from "@/theme/typography";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
@@ -38,7 +38,7 @@ type localSearch = {
 
 export default function VerMovimentoDetalhado() {
     const sheetRef = useRef<BottomSheetModal>(null)
-    const snapPoints = useMemo(() => ["55%"], [])
+    const snapPoints = useMemo(() => ["24.5%"], [])
     const renderBackdrop = useCallback(
         (props: BottomSheetBackdropProps) => (
             <BottomSheetBackdrop
@@ -52,6 +52,7 @@ export default function VerMovimentoDetalhado() {
         []
     )
 
+    const router = useRouter()
     const { id } = useLocalSearchParams<localSearch>();
     const db = useSQLiteContext();
     const { width } = useWindowDimensions()
@@ -83,7 +84,6 @@ export default function VerMovimentoDetalhado() {
         }, []) 
     )
 
-    console.log(dadosMovimento)
     return (
         <ScreenWrapper>
         <View style={{ flex: 1, paddingInline: 15, paddingBlock: 15}}>
@@ -193,18 +193,36 @@ export default function VerMovimentoDetalhado() {
             ref={sheetRef}
             snapPoints={snapPoints}
             backdropComponent={renderBackdrop}
+            enableOverDrag={false}
+            enableDynamicSizing={false}
             backgroundStyle={{backgroundColor: colors.surface}}
             handleIndicatorStyle={{backgroundColor: colors.border,
         width: 40}}
             >
-                <BottomSheetView style={{paddingInline: 18,paddingBottom: 40, paddingTop: 15, gap: 35}}>
-                    <Pressable onPress={() => console.log('Editar')}>
+                <BottomSheetView style={{paddingInline: 24,paddingBottom: 45, paddingTop: 20, gap: 35}}>
+                    <Pressable style={styleContainer.btOpcoes} onPress={() => {
+
+                        router.push({
+                        pathname: dadosMovimento?.tipo_movimentacao == 1? '/(gerando_ganho)/gerandoGanho' : '/(gerando_gasto)/gerandoGasto',
+                        params: {
+                            id: dadosMovimento?.id
+                        }
+                        })
+                        sheetRef.current?.dismiss()
+                        }}>
+                        <View style={[styleContainer.iconOpcoes, {backgroundColor: colors.purpleSoft}]}>
+                            <FontAwesome6 name="pencil" size={width * 0.05} color={colors.purple} />
+                        </View>
+
                         <Text style={[styleContainer.textoOpcoes, {color: colors.text}]}>
                             Editar movimentação
                         </Text>
                     </Pressable>
 
-                    <Pressable onPress={() => console.log('Excluir')}>
+                    <Pressable style={styleContainer.btOpcoes} onPress={() => console.log('Excluir')}>
+                        <View style={[styleContainer.iconOpcoes, {backgroundColor: colors.redSoft}]}>
+                            <FontAwesome6 name="trash" size={width * 0.05} color={colors.red} />
+                        </View>
                         <Text style={[styleContainer.textoOpcoes, {color: colors.red}]}>
                             Excluir movimentação
                         </Text>
@@ -224,8 +242,7 @@ const styleContainer = StyleSheet.create({
         // padding: 15,
         paddingBlock: 20,
         gap: 12,
-        alignContent: 'center',
-        alignItems: 'center'
+        alignItems: 'center',
     },
     iconMovimento: {
         paddingInline: 20,
@@ -239,7 +256,8 @@ const styleContainer = StyleSheet.create({
         color: colors.text,
         fontSize: 24.5,
         alignSelf: "flex-start",
-        fontFamily: fonts.displaySemiBold
+        fontFamily: fonts.displaySemiBold,
+        alignItems: 'center'
     },
 
 
@@ -286,6 +304,15 @@ const styleContainer = StyleSheet.create({
 
     textoOpcoes: {
         fontFamily: fonts.bodyBold,
-        fontSize: 16
+        fontSize: 17
+    },
+    btOpcoes: {
+        flexDirection: 'row',
+        alignItems: "center",
+        gap: 15
+    },
+    iconOpcoes: {
+        padding: 10,
+        borderRadius: 8
     }
 })
