@@ -1,6 +1,6 @@
 import { colors } from "@/theme/colors";
 import React from "react";
-import { Keyboard, View } from "react-native";
+import { Keyboard, ScrollView, View } from "react-native";
 import { KeyboardAvoidingView, Platform, Pressable } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -14,11 +14,12 @@ export function ScreenWrapper({ children }: { children: React.ReactNode }) {
         behavior={Platform.OS == 'ios' ? 'padding' : 'height'}
         keyboardVerticalOffset={Platform.OS == 'ios' ? 64 : 0}
         >
-            <Pressable onPress={Keyboard.dismiss}
-            style={{ flexGrow: 1, backgroundColor: colors.background, padding: 1.6 }}
-            >
-                {children}
-            </Pressable>
+        <ScrollView
+        contentContainerStyle={{ flexGrow: 1 }}
+        keyboardShouldPersistTaps="handled"
+        >
+            {children}
+        </ScrollView>
         </KeyboardAvoidingView>
         </SafeAreaView>
     )

@@ -7,38 +7,57 @@ import { useSQLiteContext } from "expo-sqlite";
 import { useForm } from "react-hook-form";
 import { StyleSheet, Text, View } from "react-native";
 import z from "zod";
+import { HeaderVoltar } from "@/components/HeaderVoltar";
+import { useLocalSearchParams, useRouter } from "expo-router";
+import { InputDate } from "@/components/input/InputDate";
+import { InputCheckbox } from "@/components/input/checkBox";
 
 const categoriasGasto = [
-  { label: "Alimentação", value: "alimentacao", icone: "utensils" },
-  { label: "Casa", value: "casa", icone: "house" },
-  { label: "Transporte", value: "transporte", icone: "car" },
-  { label: "Lazer", value: "lazer", icone: "gamepad" },
-  { label: "Outro", value: "outro", icone: "ellipsis" },
+  { label: "Alimentação", value: 1, icone: "utensils" },
+  { label: "Casa", value: 2, icone: "house" },
+  { label: "Transporte", value: 3, icone: "car" },
+  { label: "Lazer", value: 4, icone: "gamepad" },
+  { label: "Outro", value: 5, icone: "ellipsis" },
 ];
 
 const movimentoGastoSchema = z.object({
   tituloMovimentacao: z.string().min(3, "Pelo menos 3 caracteres"),
   valorMovimentacao: z.number().min(0.01, "Valor inválido").nonnegative(),
-  descricaoMovimentacao: z.string(),
+  descricaoMovimentacao: z.string().nullish(),
   // dataMovimentacao: z.date()
   dataMovimentacao: z.string(), // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
-  categoria: z.string().min(1, "Selecione uma categoria"),
+  recorrente: z.number(),
+  parcelas: z.number(),
+  qtdParcelas: z.number(),
+  categoria: z.number(),
 });
 
 type movimentoGastoFormData = z.infer<typeof movimentoGastoSchema>;
 
-export default function GerandoGasto() {
-  const db = useSQLiteContext();
+type localSearch = {
+  id: string;
+}
 
+export default function GerandoGasto() {
+  const { id } = useLocalSearchParams<localSearch>();
+  const router = useRouter()
+  const db = useSQLiteContext();
   const {
     control,
     clearErrors,
     handleSubmit,
+    watch,
     formState: { errors },
   } = useForm<movimentoGastoFormData>({
     resolver: zodResolver(movimentoGastoSchema),
     mode: "onSubmit",
     reValidateMode: "onSubmit",
+    defaultValues: {
+      dataMovimentacao: String(new Date().toISOString().split('T')[0]),
+      qtdParcelas: 0,
+      parcelas: 0,
+      recorrente: 0,
+    }
   });
 
   async function salvarMovimentacao(data: movimentoGastoFormData) {
@@ -51,26 +70,48 @@ export default function GerandoGasto() {
             descricao,
             data_emitida,
             tipo_movimentacao,
+            recorrente,
             icone
             )
             values
             (
-            ?,?,?,?,?,?
+            ?,?,?,?,?,?,?
             )
             `,
       data.tituloMovimentacao,
       data.valorMovimentacao,
-      data.descricaoMovimentacao,
+      data.descricaoMovimentacao ?? null,
       data.dataMovimentacao,
       2,
+      data.recorrente,
       null,
-    );
+    )
+    .then(async (res) => {
+      if (data.parcelas == 1 && data.qtdParcelas > 0){
+        await db.runAsync(
+          `
+          INSERT INTO movimentoParcelado (
+            id_movimentacao
+            ,parcelas_pagas
+            ,parcelas_restantes
+          )
+            values
+          (?, ?, ?)
+          `,
+          res.lastInsertRowId,
+          0,
+          data.qtdParcelas
+        )
+      }
+      router.back()
+    })
+    .catch((err) => { console.log(err) })
   }
 
   return (
     <ScreenWrapper>
       <View style={{ flex: 1, paddingInline: 15, paddingBlock: 15 }}>
-        <Text>Gerando Gasto</Text>
+        <HeaderVoltar titulo={!id? "Gerar Gasto":"Editar Gasto"}/>
 
         <View style={styleContainer.conteudoPagina}>
           <View style={styleContainer.containerDadosPrincipais}>
@@ -103,14 +144,38 @@ export default function GerandoGasto() {
               error={errors.descricaoMovimentacao?.message}
             />
 
-            <InputText
+            <InputDate
               control={control}
               name="dataMovimentacao"
               label="Data efetuada"
               clearErrors={clearErrors}
-              placeholder="Data efetuada"
               error={errors.dataMovimentacao?.message}
             />
+
+            <InputCheckbox
+            control={control}
+            name="recorrente"
+            label="Recorrente"
+            size={30}
+            />
+
+            <InputCheckbox
+            control={control}
+            name="parcelas"
+            label="Parcelas"
+            size={30}
+            />
+
+            {
+              watch("parcelas") == 1?
+              <InputText
+              control={control}
+              name="qtdParcelas"
+              label="Número de parcelas"
+              type="number"
+              />
+              : null
+            }
 
             <InputSelect
             control={control}
@@ -125,8 +190,9 @@ export default function GerandoGasto() {
 
           <View style={styleContainer.botaoSalvar}>
             <ButtonComponent
-              label="Salvar"
-              onPress={() => handleSubmit(salvarMovimentacao)}
+              label={!id? "Salvar":"Editar"}
+              variant="red"
+              onPress={() => handleSubmit(salvarMovimentacao, (err) => console.log(err))()}
             />
           </View>
         </View>
@@ -139,12 +205,15 @@ const styleContainer = StyleSheet.create({
   conteudoPagina: {
     flex: 1,
     justifyContent: "space-between",
+    paddingTop: 15
   },
+
   containerDadosPrincipais: {
-    gap: 20,
+    gap: 25,
   },
 
   botaoSalvar: {
-    // alignSelf: 'flex-end',
+    paddingTop: 35,
+    paddingBottom: 15,
   },
 });

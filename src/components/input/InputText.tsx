@@ -78,6 +78,7 @@ export function InputText <T extends FieldValues>({
                 }}
                 value={type == "real" ? formatarReal(value ?? null) : value}
                 {...TextInputProps}
+                keyboardType={type == 'text'? 'default':'numeric'}
                 placeholderTextColor={"#7e7e7e"}
                 />
             )}

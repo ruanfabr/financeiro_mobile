@@ -195,9 +195,14 @@ export default function MainPage() {
               {dadosMovimentacoes.map((dado) => {
                 if (dado.tipo_movimentacao == 2)
                   return (
-                    <Pressable onPress={() => console.log('pressionado')}>
+                    <Pressable onPress={() => router.push({
+                      pathname: '/(detalhe_movimento)/verMovimentoDetalhado',
+                      params: {
+                              id: dado.id
+                              }
+                      })}
+                      key={dado.id}>
                     <View
-                      key={dado.id}
                       style={styleContainer.containerConteudoOut}
                     >
                       <View style={styleContainer.iconMovimentacaoGasto}>

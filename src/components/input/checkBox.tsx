@@ -22,7 +22,6 @@ export function InputCheckbox <T extends FieldValues>({ control, name, label, si
         render={({ field: {onChange, onBlur, value}}) => (
         <Pressable style={styleContainer.linha} onPress={() => {
             onChange(value == 1? 0:1)
-            console.log(value)
             }}>
             <View
             style={[
