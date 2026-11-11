@@ -108,7 +108,6 @@ export default function GerandoGanho() {
   )
 
   async function salvarMovimentacao(data: movimentoGanhoFormData) {
-    console.log('foi')
     await db.runAsync(
       `
       INSERT INTO movimentacoes (
@@ -168,7 +167,7 @@ export default function GerandoGanho() {
   return (
     <ScreenWrapper>
       <View style={{ flex: 1, paddingInline: 15, paddingBlock: 15 }}>
-        <HeaderVoltar titulo={!id? "Gerando Ganho" : "Editar Ganho"} />
+        <HeaderVoltar titulo={!id? "Gerar Ganho" : "Editar Ganho"} />
 
         <View style={styleContainer.conteudoPagina}>
           <View style={styleContainer.containerDadosPrincipais}>
@@ -195,7 +194,6 @@ export default function GerandoGanho() {
               name="valorMovimentacao"
               label="Valor"
               clearErrors={clearErrors}
-              keyboardType="numeric"
               type="real"
               placeholder="Valor"
               error={errors.valorMovimentacao?.message}
@@ -251,16 +249,10 @@ export default function GerandoGanho() {
 }
 
 const styleContainer = StyleSheet.create({
-  tituloPagina: {
-    fontSize: 27,
-    fontWeight: "600",
-    paddingInline: 7,
-    paddingBlock: 8,
-  },
-
   conteudoPagina: {
     flex: 1,
     justifyContent: "space-between",
+    paddingTop: 15
   },
 
   containerDadosPrincipais: {
@@ -268,6 +260,7 @@ const styleContainer = StyleSheet.create({
   },
 
   botaoSalvar: {
-    // alignSelf: 'flex-end',
+    paddingTop: 35,
+    paddingBottom: 15,
   },
 });
