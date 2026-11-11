@@ -10,7 +10,7 @@ App mobile de organização financeira pessoal: registrar ganhos e gastos, acomp
 - [x] Cadastro de ganho e de gasto
 - [x] Tela de detalhe da movimentação
 - [x] Excluir movimentação
-- [ ] Editar movimentação
+- [ ] Editar movimentação (ganho pronto, falta gasto)
 - [ ] Telas de "ver mais" para ganhos e gastos
 - [ ] Gerenciamento de categorias
 - [ ] Login
@@ -40,8 +40,6 @@ npx expo start --tunnel
 ```
 
 Depois, leia o QR Code com o Expo Go. O `--tunnel` permite conectar o celular mesmo quando ele não está na mesma rede que o computador.
-
-> O `.npmrc` tem `legacy-peer-deps=true` de propósito: o `@react-native-community/datetimepicker` tem um conflito de peer dependency com o `react-native-windows`.
 
 Para instalar uma biblioteca nova, use sempre `npx expo install <lib>`. Esse comando escolhe a versão compatível com o SDK do Expo.
 
