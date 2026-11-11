@@ -84,7 +84,6 @@ export default function VerMovimentoDetalhado() {
     )
 
     async function excluirMovimento(id: number) {
-        console.log('eae')
         await db.runAsync(
             `
             DELETE FROM movimentacoes

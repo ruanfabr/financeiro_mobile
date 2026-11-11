@@ -92,6 +92,7 @@ export function InputSelect <T extends FieldValues>({
                                     style={[styleComponent.opcaoRow, ativo && styleComponent.opcaoRowAtiva]}
                                     onPress={() => {
                                         onChange(opcao.value)
+                                        console.log(opcao.value)
                                         if (error && clearErrors) clearErrors(name)
                                         sheetRef.current?.dismiss()
                                     }}

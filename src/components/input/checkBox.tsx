@@ -14,7 +14,6 @@ interface propCheckBox <T extends FieldValues> {
 }
 
 export function InputCheckbox <T extends FieldValues>({ control, name, label, size = 22 }: propCheckBox<T>){
-    // const [checked, setChecked] = useState(false)
 
     return (
         <Controller
@@ -22,21 +21,17 @@ export function InputCheckbox <T extends FieldValues>({ control, name, label, si
         name={name}
         render={({ field: {onChange, onBlur, value}}) => (
         <Pressable style={styleContainer.linha} onPress={() => {
-            // setChecked(!checked)
-            // onChange(checked)
-            onChange(!value)
+            onChange(value == 1? 0:1)
             console.log(value)
             }}>
             <View
             style={[
                 styleContainer.mainBox,
                 {width: size, height: size, borderRadius: size * 0.32},
-                // checked && styleContainer.mainBoxCheck
-                value && styleContainer.mainBoxCheck
+                value == 1 && styleContainer.mainBoxCheck
             ]}
             >
-                {/* {checked && <FontAwesome6 name="check" size={size * 0.55} color={colors.white}/>} */}
-                {value && <FontAwesome6 name="check" size={size * 0.55} color={colors.white}/>}
+                {value == 1 && <FontAwesome6 name="check" size={size * 0.55} color={colors.white}/>}
             </View>
 
             <Text style={[styleContainer.texto, size?{fontSize: size * 0.69}:null]}>

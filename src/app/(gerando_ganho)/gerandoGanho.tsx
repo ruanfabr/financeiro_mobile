@@ -14,11 +14,11 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback } from "react";
 
 const categoriasGanho = [
-  { label: "Salário", value: "salario", icone: "sack-dollar" },
-  { label: "Freelance", value: "freelance", icone: "laptop" },
-  { label: "Investimento", value: "investimento", icone: "chart-line" },
-  { label: "Presente", value: "presente", icone: "gift" },
-  { label: "Outro", value: "outro", icone: "ellipsis" },
+  { label: "Salário", value: 1, icone: "sack-dollar" },
+  { label: "Freelance", value: 2, icone: "laptop" },
+  { label: "Investimento", value: 3, icone: "chart-line" },
+  { label: "Presente", value: 4, icone: "gift" },
+  { label: "Outro", value: 5, icone: "ellipsis" },
 ];
 
 const movimentoGanhoSchema = z.object({
@@ -27,9 +27,9 @@ const movimentoGanhoSchema = z.object({
   descricaoMovimentacao: z.string().nullish(),
   // dataMovimentacao: z.date()
   dataMovimentacao: z.string().min(1, "Selecionar uma data"), // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
-  recorrente: z.boolean(),
+  recorrente: z.number(),
   // recebido: z.boolean().default(true),
-  categoria: z.string().min(1, "Selecione uma categoria"),
+  categoria: z.number(),
 });
 
 type movimentoGanhoFormData = z.infer<typeof movimentoGanhoSchema>;
@@ -41,7 +41,7 @@ type Movimentacoes = {
     descricao: string | null;
     data_emitida: string;
     categoria: number | null;
-    recorrente: boolean;
+    recorrente: number;
     qtd_parcelas: number;
     status_movimentacao: string;
     tipo_movimentacao: number;
@@ -69,7 +69,7 @@ export default function GerandoGanho() {
     reValidateMode: "onSubmit",
     defaultValues: {
       dataMovimentacao: String(new Date().toISOString().split('T')[0]),
-      recorrente: false
+      recorrente: 0
     }
   });
 
@@ -93,13 +93,12 @@ export default function GerandoGanho() {
                   FROM movimentacoes
                   WHERE id = ?
                   `, [id]);
-                  console.log(movimento)
 
                   reset({
                     tituloMovimentacao: movimento?.titulo,
                     descricaoMovimentacao: movimento?.descricao,
                     dataMovimentacao: movimento?.data_emitida,
-                    // categoria: movimento?.categoria,
+                    categoria: movimento?.categoria ?? undefined,
                     recorrente: movimento?.recorrente,
                     valorMovimentacao: movimento?.valor
                   })
@@ -119,11 +118,12 @@ export default function GerandoGanho() {
         data_emitida,
         tipo_movimentacao,
         recorrente,
+        categoria,
         icone
       )
       values
       (
-        ?,?,?,?,?,?,?
+        ?,?,?,?,?,?,?,?
       )
       `,
       data.tituloMovimentacao,
@@ -132,30 +132,36 @@ export default function GerandoGanho() {
       data.dataMovimentacao,
       1,
       data.recorrente? 1 : 0,
+      data.categoria,
       null,
     );
     router.back()
-    
   }
 
   async function editarMovimentacao(data: movimentoGanhoFormData) {
     await db.runAsync(
       `
       UPDATE movimentacoes SET
-        titulo = ?
+        titulo = ?,
         valor = ?,
         descricao = ?,
         data_emitida = ?,
         tipo_movimentacao = ?,
+        recorrente = ?,
+        categoria = ?,
         icone = ?
+      WHERE id = ?
       `,
       data.tituloMovimentacao,
       data.valorMovimentacao,
       data.descricaoMovimentacao? data.descricaoMovimentacao : null,
       data.dataMovimentacao,
       1,
+      data.recorrente? 1:0,
+      data.categoria,
       null,
-    )
+      id
+    );
     router.back()
   }
 
@@ -233,7 +239,9 @@ export default function GerandoGanho() {
             <ButtonComponent
               label={!id? "Salvar":"Editar"}
               variant="green"
-              onPress={() => handleSubmit(salvarMovimentacao)()}
+              onPress={() => {
+                !id? handleSubmit(salvarMovimentacao)():handleSubmit(editarMovimentacao, (err) => console.log(err))()
+              }}
             />
           </View>
         </View>
