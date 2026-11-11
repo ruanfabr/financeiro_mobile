@@ -80,7 +80,7 @@ export default function GerandoGasto() {
             `,
       data.tituloMovimentacao,
       data.valorMovimentacao,
-      data.descricaoMovimentacao,
+      data.descricaoMovimentacao ?? null,
       data.dataMovimentacao,
       2,
       data.recorrente,
