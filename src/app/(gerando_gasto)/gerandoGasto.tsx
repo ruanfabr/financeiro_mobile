@@ -15,9 +15,9 @@ import { InputCheckbox } from "@/components/input/checkBox";
 const categoriasGasto = [
   { label: "Alimentação", value: 1, icone: "utensils" },
   { label: "Casa", value: 2, icone: "house" },
-  { label: "Transporte", value: "transporte", icone: "car" },
-  { label: "Lazer", value: 3, icone: "gamepad" },
-  { label: "Outro", value: 4, icone: "ellipsis" },
+  { label: "Transporte", value: 3, icone: "car" },
+  { label: "Lazer", value: 4, icone: "gamepad" },
+  { label: "Outro", value: 5, icone: "ellipsis" },
 ];
 
 const movimentoGastoSchema = z.object({
@@ -54,7 +54,9 @@ export default function GerandoGasto() {
     reValidateMode: "onSubmit",
     defaultValues: {
       dataMovimentacao: String(new Date().toISOString().split('T')[0]),
-      recorrente: 0
+      qtdParcelas: 0,
+      parcelas: 0,
+      recorrente: 0,
     }
   });
 
@@ -85,20 +87,22 @@ export default function GerandoGasto() {
       null,
     )
     .then(async (res) => {
-      await db.runAsync(
-        `
-        INSERT INTO movimentoParcelado (
-          id_movimentacao
-          ,parcelas_pagas
-          ,parcelas_restantes
+      if (data.parcelas == 1 && data.qtdParcelas > 0){
+        await db.runAsync(
+          `
+          INSERT INTO movimentoParcelado (
+            id_movimentacao
+            ,parcelas_pagas
+            ,parcelas_restantes
+          )
+            values
+          (?, ?, ?)
+          `,
+          res.lastInsertRowId,
+          0,
+          data.qtdParcelas
         )
-          values
-        (?, ?, ?)
-        `,
-        res.lastInsertRowId,
-        0,
-        data.qtdParcelas
-      )
+      }
       router.back()
     })
     .catch((err) => { console.log(err) })
