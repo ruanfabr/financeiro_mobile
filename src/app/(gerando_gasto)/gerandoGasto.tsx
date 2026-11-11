@@ -23,7 +23,7 @@ const categoriasGasto = [
 const movimentoGastoSchema = z.object({
   tituloMovimentacao: z.string().min(3, "Pelo menos 3 caracteres"),
   valorMovimentacao: z.number().min(0.01, "Valor inválido").nonnegative(),
-  descricaoMovimentacao: z.string(),
+  descricaoMovimentacao: z.string().nullish(),
   // dataMovimentacao: z.date()
   dataMovimentacao: z.string(), // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
   recorrente: z.number(),
