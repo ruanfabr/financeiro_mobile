@@ -37,9 +37,10 @@ export function InputText <T extends FieldValues>({
             }
         else if (type == "number"){
             // onChange(parseFloat(valorOnchange?.replaceAll(',', '.')))
+            const digitos = valor.replace(/\D/g, "")
             
             if (error && clearErrors) clearErrors(name)
-            return parseFloat(valor?.replaceAll(',', '.'))
+            return digitos.toString()
             }
         else if (type == "real"){
             const digitos = valor.replace(/\D/g, "")
@@ -76,7 +77,7 @@ export function InputText <T extends FieldValues>({
                     }
                     onChange(tipoTexto(type, valorOnchange))
                 }}
-                value={type == "real" ? formatarReal(value ?? null) : value}
+                value={type == "real" ? formatarReal(value ?? null) : String(value)}
                 {...TextInputProps}
                 keyboardType={type == 'text'? 'default':'numeric'}
                 placeholderTextColor={"#7e7e7e"}

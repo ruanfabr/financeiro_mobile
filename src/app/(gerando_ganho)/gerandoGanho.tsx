@@ -42,7 +42,7 @@ type Movimentacoes = {
     data_emitida: string;
     categoria: number | null;
     recorrente: number;
-    qtd_parcelas: number;
+    parcelas_restantes: number;
     status_movimentacao: string;
     tipo_movimentacao: number;
     icone: string | null;
@@ -79,19 +79,20 @@ export default function GerandoGanho() {
       async function verMovimentoGanho() {
               const movimento = await db.getFirstAsync<Movimentacoes>(`
                   SELECT
-                      id,
-                      titulo,
-                      valor,
-                      descricao,
-                      data_emitida,
-                      categoria,
-                      recorrente,
-                      qtd_parcelas,
-                      status_movimentacao,
-                      tipo_movimentacao,
-                      icone
-                  FROM movimentacoes
-                  WHERE id = ?
+                      m.id,
+                      m.titulo,
+                      m.valor,
+                      m.descricao,
+                      m.data_emitida,
+                      m.categoria,
+                      m.recorrente,
+                      m.status_movimentacao,
+                      m.tipo_movimentacao,
+                      m.icone,
+                      mp.parcelas_restantes
+                  FROM movimentacoes m
+                  join movimentoParcelado mp on m.id = mp.id_movimentacao
+                  WHERE m.id = ?
                   `, [id]);
 
                   reset({

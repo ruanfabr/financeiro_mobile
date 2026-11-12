@@ -18,7 +18,8 @@ type Movimentacoes = {
     data_emitida: string;
     categoria: number | null;
     recorrente: number;
-    qtd_parcelas: number;
+    parcelas_pagas: number;
+    parcelas_restantes: number;
     status_movimentacao: string;
     tipo_movimentacao: number;
     icone: string | null;
@@ -62,19 +63,21 @@ export default function VerMovimentoDetalhado() {
             async function verMovimento() {
                 const movimento = await db.getFirstAsync<Movimentacoes>(`
                     SELECT
-                        id,
-                        titulo,
-                        valor,
-                        descricao,
-                        data_emitida,
-                        categoria,
-                        recorrente,
-                        qtd_parcelas,
-                        status_movimentacao,
-                        tipo_movimentacao,
-                        icone
-                    FROM movimentacoes
-                    WHERE id = ?
+                        m.id,
+                        m.titulo,
+                        m.valor,
+                        m.descricao,
+                        m.data_emitida,
+                        m.categoria,
+                        m.recorrente,
+                        mp.parcelas_pagas,
+                        mp.parcelas_restantes,
+                        m.status_movimentacao,
+                        m.tipo_movimentacao,
+                        m.icone
+                    FROM movimentacoes m
+                    JOIN movimentoParcelado mp on m.id = mp.id_movimentacao
+                    WHERE m.id = ?
                     `, [id]);
 
                 setDadosMovimento(movimento);
@@ -159,7 +162,7 @@ export default function VerMovimentoDetalhado() {
                         Parcelas
                     </Text>
                     {
-                        dadosMovimento.qtd_parcelas || 0 > 0? (
+                        dadosMovimento.parcelas_restantes || 0 > 0? (
                         <View>
                             <Text style={styleContainer.descCard}>
                                 numero parcelas
