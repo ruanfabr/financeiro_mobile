@@ -77,7 +77,7 @@ export function InputText <T extends FieldValues>({
                     }
                     onChange(tipoTexto(type, valorOnchange))
                 }}
-                value={type == "real" ? formatarReal(value ?? null) : String(value)}
+                value={type == "real" ? formatarReal(value ?? null) : value? String(value):undefined}
                 {...TextInputProps}
                 keyboardType={type == 'text'? 'default':'numeric'}
                 placeholderTextColor={"#7e7e7e"}
