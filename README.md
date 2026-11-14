@@ -10,7 +10,7 @@ App mobile de organização financeira pessoal: registrar ganhos e gastos, acomp
 - [x] Cadastro de ganho e de gasto
 - [x] Tela de detalhe da movimentação
 - [x] Excluir movimentação
-- [ ] Editar movimentação (ganho pronto, falta gasto)
+- [x] Editar movimentação (ganho e gasto)
 - [ ] Telas de "ver mais" para ganhos e gastos
 - [ ] Gerenciamento de categorias
 - [ ] Login
@@ -24,22 +24,31 @@ App mobile de organização financeira pessoal: registrar ganhos e gastos, acomp
 - [react-hook-form](https://react-hook-form.com/) + [zod](https://zod.dev/) para os formulários e a validação
 - [@gorhom/bottom-sheet](https://gorhom.dev/react-native-bottom-sheet/) para os menus que sobem da parte de baixo da tela
 - [react-native-reanimated](https://docs.swmansion.com/react-native-reanimated/) para as animações
+- [expo-dev-client](https://docs.expo.dev/versions/v58.0.0/sdk/dev-client/) para rodar o app num development build próprio, em vez do Expo Go
 
 ## Como rodar
 
 O que você precisa ter instalado:
 
 - Node.js
-- O app [Expo Go](https://expo.dev/go) no celular
+- Android Studio (Android SDK e um emulador), ou um celular Android com depuração USB ativada
 
-Instale as dependências e inicie o projeto:
+O projeto usa um **development build** (`expo-dev-client`): um app nativo próprio com as bibliotecas que o projeto usa, no lugar do Expo Go.
+
+Instale as dependências e gere o build no emulador ou no celular conectado:
 
 ```bash
 npm install
+npm run android   # roda npx expo run:android
+```
+
+Só é preciso gerar o build de novo quando entrar uma biblioteca nativa nova ou mudar o `app.json`. No dia a dia, basta iniciar o servidor e abrir o app que já está instalado:
+
+```bash
 npx expo start --tunnel
 ```
 
-Depois, leia o QR Code com o Expo Go. O `--tunnel` permite conectar o celular mesmo quando ele não está na mesma rede que o computador.
+O `--tunnel` permite conectar o celular mesmo quando ele não está na mesma rede que o computador.
 
 Para instalar uma biblioteca nova, use sempre `npx expo install <lib>`. Esse comando escolhe a versão compatível com o SDK do Expo.
 

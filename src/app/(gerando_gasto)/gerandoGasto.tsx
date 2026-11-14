@@ -28,7 +28,7 @@ const movimentoGastoSchema = z.object({
   // dataMovimentacao: z.date()
   dataMovimentacao: z.string(), // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
   recorrente: z.number(),
-  parcelas: z.number(),
+  parcela: z.number(),
   parcelas_restantes: z.number(),
   categoria: z.number(),
 });
@@ -71,7 +71,7 @@ export default function GerandoGasto() {
     defaultValues: {
       dataMovimentacao: String(new Date().toISOString().split('T')[0]),
       parcelas_restantes: 0,
-      parcelas: 0,
+      parcela: 0,
       recorrente: 0,
     }
   });
@@ -95,7 +95,7 @@ export default function GerandoGasto() {
               m.icone,
               mp.parcelas_restantes
           FROM movimentacoes m
-          join movimentoParcelado mp on m.id = mp.id_movimentacao
+          left join movimentoParcelado mp on m.id = mp.id_movimentacao
           WHERE m.id = ?
           `,
           [id]
@@ -108,7 +108,7 @@ export default function GerandoGasto() {
           categoria: movimento?.categoria ?? undefined,
           recorrente: movimento?.recorrente,
           valorMovimentacao: movimento?.valor,
-          parcelas: movimento?.parcelas_restantes && movimento.parcelas_restantes > 0? 1:0,
+          parcela: movimento?.parcelas_restantes && movimento.parcelas_restantes > 0? 1:0,
           parcelas_restantes: movimento?.parcelas_restantes ?? undefined
         })
       }
@@ -144,7 +144,7 @@ export default function GerandoGasto() {
       null,
     )
     .then(async (res) => {
-      if (data.parcelas == 1 && data.parcelas_restantes > 0){
+      if (data.parcela == 1 && data.parcelas_restantes > 0){
         await db.runAsync(
           `
           INSERT INTO movimentoParcelado (
@@ -163,6 +163,65 @@ export default function GerandoGasto() {
       router.back()
     })
     .catch((err) => { console.log(err) })
+  }
+
+  async function editarMovimentacao(data: movimentoGastoFormData) {
+    console.log('edit')
+    await db.runAsync(
+      `
+      UPDATE movimentacoes SET
+        titulo = ?,
+        valor = ?,
+        descricao = ?,
+        data_emitida = ?,
+        recorrente = ?,
+        categoria = ?,
+        icone = ?
+      WHERE id = ?
+      `,
+      data.tituloMovimentacao,
+      data.valorMovimentacao,
+      data.descricaoMovimentacao ?? null,
+      data.dataMovimentacao,
+      data.recorrente,
+      data.categoria,
+      null,
+      id
+    ).then(async () => {
+      if (data.parcela == 1){
+        await db.runAsync(
+          `
+          INSERT INTO movimentoParcelado (
+            id_movimentacao
+            ,parcelas_pagas
+            ,parcelas_restantes
+            )
+            values
+            (?, ?, ?)
+            ON CONFLICT(id_movimentacao) DO UPDATE SET
+            parcelas_restantes = excluded.parcelas_restantes
+            `,
+            id,
+            0,
+            data.parcelas_restantes
+          )
+        console.log('edit movimento parcelado')
+      }
+      else {
+        console.log('deletando movimento parcelado')
+        await db.runAsync(
+          `
+          DELETE from movimentoParcelado
+          where id_movimentacao = ?;
+          `,
+          id
+        )
+      }
+      router.back()
+    })
+    .catch((err) => {
+      console.log('erro ao inserir parcelas: ', err)
+    })
   }
 
   return (
@@ -218,17 +277,17 @@ export default function GerandoGasto() {
 
             <InputCheckbox
             control={control}
-            name="parcelas"
-            label="Parcelas"
+            name="parcela"
+            label="parcela"
             size={30}
             />
 
             {
-              watch("parcelas") == 1?
+              watch("parcela") == 1?
               <InputText
               control={control}
               name="parcelas_restantes"
-              label="Número de parcelas"
+              label="Número de parcela"
               type="number"
               />
               : null
@@ -249,7 +308,7 @@ export default function GerandoGasto() {
             <ButtonComponent
               label={!id? "Salvar":"Editar"}
               variant="red"
-              onPress={() => handleSubmit(salvarMovimentacao, (err) => console.log(err))()}
+              onPress={() => !id? handleSubmit(salvarMovimentacao, (err) => console.log(err))():handleSubmit(editarMovimentacao, (err) => console.log(err))()}
             />
           </View>
         </View>

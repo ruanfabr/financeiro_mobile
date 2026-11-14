@@ -91,10 +91,11 @@ export default function GerandoGanho() {
                       m.icone,
                       mp.parcelas_restantes
                   FROM movimentacoes m
-                  join movimentoParcelado mp on m.id = mp.id_movimentacao
+                  left JOIN movimentoParcelado mp on m.id = mp.id_movimentacao
                   WHERE m.id = ?
                   `, [id]);
 
+                  console.log(movimento)
                   reset({
                     tituloMovimentacao: movimento?.titulo,
                     descricaoMovimentacao: movimento?.descricao,
