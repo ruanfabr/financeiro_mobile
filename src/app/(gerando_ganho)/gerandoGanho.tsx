@@ -235,16 +235,16 @@ export default function GerandoGanho() {
 
           </View>
 
-          <View style={styleContainer.botaoSalvar}>
-            <ButtonComponent
-              label={!id? "Salvar":"Editar"}
-              variant="green"
-              onPress={() => {
-                !id? handleSubmit(salvarMovimentacao)():handleSubmit(editarMovimentacao, (err) => console.log(err))()
-              }}
-            />
-          </View>
         </View>
+      </View>
+      <View style={styleContainer.botaoSalvar}>
+        <ButtonComponent
+          label={!id? "Salvar":"Editar"}
+          variant="green"
+          onPress={() => {
+            !id? handleSubmit(salvarMovimentacao)():handleSubmit(editarMovimentacao, (err) => console.log(err))()
+          }}
+        />
       </View>
     </ScreenWrapper>
   );
@@ -264,5 +264,6 @@ const styleContainer = StyleSheet.create({
   botaoSalvar: {
     paddingTop: 35,
     paddingBottom: 15,
+    paddingInline: 20
   },
 });

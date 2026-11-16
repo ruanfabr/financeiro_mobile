@@ -4,7 +4,7 @@ import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
 import { Link, useFocusEffect, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useState } from "react";
-import { Pressable, StyleSheet, Text, View } from "react-native";
+import { Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
 import { ActionMovimentacao } from "../../components/ActionMovimentacao";
 
 import * as SQLite from "expo-sqlite";
@@ -23,9 +23,13 @@ type Movimentacoes = {
   status_movimentacao: string;
   tipo_movimentacao: number;
   icone: string | null;
+  valor_parcela: number | null;
+  parcelas_pagas: number | null;
+  parcelas_restantes: number | null;
 };
 
 export default function MainPage() {
+  const { width } = useWindowDimensions()
   const router = useRouter()
   const db = useSQLiteContext();
   const [dadosMovimentacoes, setDadosMovimentacoes] = useState<Movimentacoes[]>(
@@ -42,7 +46,21 @@ export default function MainPage() {
     useCallback(() => {
       async function listaMovimentacoes() {
         const movimentacoes = await db.getAllAsync<Movimentacoes>(`
-                      SELECT * FROM movimentacoes
+                      SELECT
+                        m.id
+                        ,m.titulo 
+                        ,m.valor 
+                        ,m.descricao 
+                        ,m.data_emitida
+                        ,m.categoria 
+                        ,m.recorrente
+                        ,m.status_movimentacao
+                        ,m.tipo_movimentacao
+                        ,mp.valor_parcela
+                        ,mp.parcelas_pagas
+                        ,mp.parcelas_restantes
+                      FROM movimentacoes m
+                      LEFT JOIN movimentoParcelado mp on m.id = mp.id_movimentacao
                   `);
   
         setDadosMovimentacoes(movimentacoes);
@@ -120,7 +138,7 @@ export default function MainPage() {
                       <View style={styleContainer.iconMovimentacaoGanho}>
                         <FontAwesome6
                           name={dado.icone ? dado.icone : "dollar-sign"}
-                          size={21}
+                          size={width * 0.065}
                           color={colors.green}
                         />
                       </View>
@@ -135,7 +153,7 @@ export default function MainPage() {
                         </Text>
 
                         {dado.data_emitida && (
-                          <Text style={styleContainer.textConteudoDate}>
+                          <Text style={styleContainer.textConteudoDesc}>
                             {new Date(dado.data_emitida).toLocaleDateString('pt-BR')}
                           </Text>
                         )}
@@ -187,7 +205,7 @@ export default function MainPage() {
                 R$ {" "}
                 {dadosMovimentacoes
                   .filter((item) => item.tipo_movimentacao === 2)
-                  .reduce((a, item) => a + item.valor, 0)?.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                  .reduce((a, item) => a + (item.valor_parcela? item.valor_parcela:item.valor), 0)?.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
               </Text>
             </View>
 
@@ -208,7 +226,7 @@ export default function MainPage() {
                       <View style={styleContainer.iconMovimentacaoGasto}>
                         <FontAwesome6
                           name={dado.icone ? dado.icone : "dollar-sign"}
-                          size={19}
+                          size={width * 0.065}
                           color={colors.red}
                         />
                       </View>
@@ -222,15 +240,29 @@ export default function MainPage() {
                           {dado.titulo}
                         </Text>
 
-                        {dado.data_emitida && (
-                          <Text style={styleContainer.textConteudoDate}>
-                            {new Date(dado.data_emitida).toLocaleDateString('pt-BR')}
-                          </Text>
-                        )}
-                      </View>
+                          <View style={{flexDirection: 'row', alignContent: 'center', gap: 7.5}}>
+                            {dado.data_emitida && (
+                              <Text style={styleContainer.textConteudoDesc}>
+                                {new Date(dado.data_emitida).toLocaleDateString('pt-BR')}
+                              </Text>
+                            )}
+
+                            {dado.parcelas_restantes != 0?
+                              <Text style={[styleContainer.textConteudoDesc]}>
+                                {dado.parcelas_pagas} de {dado.parcelas_restantes}
+                              </Text>
+                            :null}
+                          </View>
+                        </View>
 
                       <Text style={styleContainer.textGasto}>
-                        R$ {dado.valor?.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
+                        R$
+                        {
+                          dado.valor_parcela?
+                          (dado.valor_parcela?.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+                          :
+                          (dado.valor?.toLocaleString("pt-BR", { minimumFractionDigits: 2, maximumFractionDigits: 2 }))
+                        }
                       </Text>
                     </View>
                     </Pressable>
@@ -319,7 +351,7 @@ const styleContainer = StyleSheet.create({
     flexDirection: "row",
     backgroundColor: colors.surfaceRaised,
     paddingBlock: 10,
-    paddingInline: 12,
+    paddingInline: 10.7,
     borderRadius: 14,
     alignItems: "center",
     width: "100%",
@@ -340,13 +372,13 @@ const styleContainer = StyleSheet.create({
     color: colors.text,
     fontSize: 15,
   },
-  textConteudoDate: {
+  textConteudoDesc: {
     fontFamily: fonts.bodyMedium,
     color: colors.textMuted,
     alignSelf: "flex-start",
-    fontSize: 12.5,
+    fontSize: 12.2,
     width: "auto",
-    letterSpacing: 0.2,
+    letterSpacing: 0.23
   },
   textGanho: {
     fontFamily: fonts.bodyBold,
@@ -359,7 +391,7 @@ const styleContainer = StyleSheet.create({
   textGasto: {
     fontFamily: fonts.bodyBold,
     color: colors.red,
-    fontSize: 16,
+    fontSize: 15.5,
     textAlign: "right",
     alignSelf: "center",
     flexShrink: 0,

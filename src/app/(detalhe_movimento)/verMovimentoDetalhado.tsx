@@ -9,6 +9,7 @@ import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
 import { useCallback, useMemo, useRef, useState } from "react";
 import { Pressable, StyleSheet, Text, useWindowDimensions, View } from "react-native";
+import { ButtonComponent } from "@/components/input/Button";
 
 
 type Movimentacoes = {
@@ -38,6 +39,7 @@ type localSearch = {
 }
 
 export default function VerMovimentoDetalhado() {
+    const [movimentoPago, setMovimentoPago] = useState(0)
     const sheetRef = useRef<BottomSheetModal>(null)
     const snapPoints = useMemo(() => ["33.4%"], [])
     const renderBackdrop = useCallback(
@@ -83,7 +85,7 @@ export default function VerMovimentoDetalhado() {
                 setDadosMovimento(movimento);
             }
             verMovimento();
-        }, []) 
+        }, [movimentoPago]) 
     )
 
     async function excluirMovimento(id: number) {
@@ -111,6 +113,7 @@ export default function VerMovimentoDetalhado() {
             id
         )
         .then(() => {
+            setMovimentoPago(movimentoPago + 1)
             sheetRef.current?.dismiss()
         })
         .catch((err) => console.log(err))
@@ -258,6 +261,13 @@ export default function VerMovimentoDetalhado() {
             }
             </View>
 
+        </View>
+        
+        <View style={styleContainer.botaoPagar}>
+            <ButtonComponent
+            label="Marcar como Pago"
+            variant="green"
+            />
         </View>
 
         {upModal()}
@@ -414,5 +424,13 @@ const styleContainer = StyleSheet.create({
         backgroundColor: colors.purple,
         height: '100%',
         borderRadius: 20
+    },
+
+
+    botaoPagar: {
+    marginBlock: 'auto',
+    paddingTop: 35,
+    paddingBottom: 15,
+    paddingInline: 20
     }
 })
