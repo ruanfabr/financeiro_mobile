@@ -151,13 +151,15 @@ export default function GerandoGasto() {
           `
           INSERT INTO movimentoParcelado (
             id_movimentacao
+            ,valor_parcela
             ,parcelas_pagas
             ,parcelas_restantes
           )
             values
-          (?, ?, ?)
+          (?, ?, ?, ?)
           `,
           res.lastInsertRowId,
+          data.valor_parcela,
           0,
           data.parcelas_restantes
         )
@@ -200,11 +202,13 @@ export default function GerandoGasto() {
             ,parcelas_restantes
             )
             values
-            (?, ?, ?)
+            (?, ?, ?, ?)
             ON CONFLICT(id_movimentacao) DO UPDATE SET
             parcelas_restantes = excluded.parcelas_restantes
+            valor_parcela = excluded.valor_parcela
             `,
             id,
+            data.valor_parcela,
             0,
             data.parcelas_restantes
           )
@@ -245,6 +249,15 @@ export default function GerandoGasto() {
 
             <InputText
               control={control}
+              name="descricaoMovimentacao"
+              label="Descrição"
+              clearErrors={clearErrors}
+              placeholder="Descrição (opcional)"
+              error={errors.descricaoMovimentacao?.message}
+            />
+
+            <InputText
+              control={control}
               name="valorMovimentacao"
               label="Valor"
               clearErrors={clearErrors}
@@ -252,15 +265,6 @@ export default function GerandoGasto() {
               type="real"
               placeholder="Valor"
               error={errors.valorMovimentacao?.message}
-            />
-
-            <InputText
-              control={control}
-              name="descricaoMovimentacao"
-              label="Descrição"
-              clearErrors={clearErrors}
-              placeholder="Descrição (opcional)"
-              error={errors.descricaoMovimentacao?.message}
             />
 
             <InputDate
@@ -316,14 +320,14 @@ export default function GerandoGasto() {
             />
           </View>
 
-          <View style={styleContainer.botaoSalvar}>
-            <ButtonComponent
-              label={!id? "Salvar":"Editar"}
-              variant="red"
-              onPress={() => !id? handleSubmit(salvarMovimentacao, (err) => console.log(err))():handleSubmit(editarMovimentacao, (err) => console.log(err))()}
-            />
-          </View>
         </View>
+      </View>
+      <View style={styleContainer.botaoSalvar}>
+        <ButtonComponent
+          label={!id? "Salvar":"Editar"}
+          variant="red"
+          onPress={() => !id? handleSubmit(salvarMovimentacao, (err) => console.log(err))():handleSubmit(editarMovimentacao, (err) => console.log(err))()}
+        />
       </View>
     </ScreenWrapper>
   );
@@ -343,5 +347,6 @@ const styleContainer = StyleSheet.create({
   botaoSalvar: {
     paddingTop: 35,
     paddingBottom: 15,
+    paddingInline: 20
   },
 });
