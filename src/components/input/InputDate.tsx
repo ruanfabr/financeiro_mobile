@@ -45,11 +45,15 @@ export function InputDate <T extends FieldValues>({
             <Controller
             control={control}
             name={name}
-            render={({ field: {onChange, value} }) => (
+            render={({ field: {onChange, onBlur, value} }) => (
                 <>
                 <Pressable
                 style={[styleComponent.campo, mostrarPicker && styleComponent.campoFocado]}
                 onPress={() => setMostrarPicker(true)}
+                onBlur={() => {
+                    setMostrarPicker(false)
+                    onBlur()
+                }}
                 >
                     <Text style={value ? styleComponent.textoValor : styleComponent.textoPlaceHolder}>
                         {value ? paraBr(value) : "Selecionar data"}
@@ -60,7 +64,8 @@ export function InputDate <T extends FieldValues>({
                     <DateTimePicker
                     value={value ? new Date(`${value}T00:00:00`) : new Date()}
                     mode="date"
-                    onChange={(_evento, dataSelecionada) => {
+                    onDismiss={() => setMostrarPicker(false)}
+                    onValueChange={(_evento, dataSelecionada) => {
                         setMostrarPicker(false)
                         if (dataSelecionada){
                             onChange(paraIso(dataSelecionada))

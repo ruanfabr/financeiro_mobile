@@ -10,15 +10,15 @@ import z from "zod";
 import { HeaderVoltar } from "@/components/HeaderVoltar";
 import { InputDate } from "@/components/input/InputDate";
 import { InputSelect } from "@/components/input/InputSelect";
-import { useFocusEffect, useLocalSearchParams } from "expo-router";
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useCallback } from "react";
 
 const categoriasGanho = [
-  { label: "Salário", value: "salario", icone: "sack-dollar" },
-  { label: "Freelance", value: "freelance", icone: "laptop" },
-  { label: "Investimento", value: "investimento", icone: "chart-line" },
-  { label: "Presente", value: "presente", icone: "gift" },
-  { label: "Outro", value: "outro", icone: "ellipsis" },
+  { label: "Salário", value: 1, icone: "sack-dollar" },
+  { label: "Freelance", value: 2, icone: "laptop" },
+  { label: "Investimento", value: 3, icone: "chart-line" },
+  { label: "Presente", value: 4, icone: "gift" },
+  { label: "Outro", value: 5, icone: "ellipsis" },
 ];
 
 const movimentoGanhoSchema = z.object({
@@ -27,7 +27,9 @@ const movimentoGanhoSchema = z.object({
   descricaoMovimentacao: z.string().nullish(),
   // dataMovimentacao: z.date()
   dataMovimentacao: z.string().min(1, "Selecionar uma data"), // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
-  categoria: z.string().min(1, "Selecione uma categoria"),
+  recorrente: z.number(),
+  // recebido: z.boolean().default(true),
+  categoria: z.number(),
 });
 
 type movimentoGanhoFormData = z.infer<typeof movimentoGanhoSchema>;
@@ -40,7 +42,7 @@ type Movimentacoes = {
     data_emitida: string;
     categoria: number | null;
     recorrente: number;
-    qtd_parcelas: number;
+    parcelas_restantes: number;
     status_movimentacao: string;
     tipo_movimentacao: number;
     icone: string | null;
@@ -51,6 +53,7 @@ type localSearch = {
 }
 
 export default function GerandoGanho() {
+  const router = useRouter()
   const db = useSQLiteContext();
   const { id } = useLocalSearchParams<localSearch>();
 
@@ -65,7 +68,8 @@ export default function GerandoGanho() {
     mode: "onSubmit",
     reValidateMode: "onSubmit",
     defaultValues: {
-      dataMovimentacao: String(new Date().toISOString().split('T')[0])
+      dataMovimentacao: String(new Date().toISOString().split('T')[0]),
+      recorrente: 0
     }
   });
 
@@ -75,26 +79,29 @@ export default function GerandoGanho() {
       async function verMovimentoGanho() {
               const movimento = await db.getFirstAsync<Movimentacoes>(`
                   SELECT
-                      id,
-                      titulo,
-                      valor,
-                      descricao,
-                      data_emitida,
-                      categoria,
-                      recorrente,
-                      qtd_parcelas,
-                      status_movimentacao,
-                      tipo_movimentacao,
-                      icone
-                  FROM movimentacoes
-                  WHERE id = ?
+                      m.id,
+                      m.titulo,
+                      m.valor,
+                      m.descricao,
+                      m.data_emitida,
+                      m.categoria,
+                      m.recorrente,
+                      m.status_movimentacao,
+                      m.tipo_movimentacao,
+                      m.icone,
+                      mp.parcelas_restantes
+                  FROM movimentacoes m
+                  left JOIN movimentoParcelado mp on m.id = mp.id_movimentacao
+                  WHERE m.id = ?
                   `, [id]);
 
+                  console.log(movimento)
                   reset({
                     tituloMovimentacao: movimento?.titulo,
                     descricaoMovimentacao: movimento?.descricao,
                     dataMovimentacao: movimento?.data_emitida,
-                    // categoria: movimento?.categoria,
+                    categoria: movimento?.categoria ?? undefined,
+                    recorrente: movimento?.recorrente,
                     valorMovimentacao: movimento?.valor
                   })
                 }
@@ -111,11 +118,13 @@ export default function GerandoGanho() {
         descricao,
         data_emitida,
         tipo_movimentacao,
+        recorrente,
+        categoria,
         icone
       )
       values
       (
-        ?,?,?,?,?,?
+        ?,?,?,?,?,?,?,?
       )
       `,
       data.tituloMovimentacao,
@@ -123,34 +132,44 @@ export default function GerandoGanho() {
       data.descricaoMovimentacao? data.descricaoMovimentacao : null,
       data.dataMovimentacao,
       1,
+      data.recorrente? 1 : 0,
+      data.categoria,
       null,
     );
+    router.back()
   }
 
   async function editarMovimentacao(data: movimentoGanhoFormData) {
     await db.runAsync(
       `
       UPDATE movimentacoes SET
-        titulo = ?
+        titulo = ?,
         valor = ?,
         descricao = ?,
         data_emitida = ?,
         tipo_movimentacao = ?,
+        recorrente = ?,
+        categoria = ?,
         icone = ?
+      WHERE id = ?
       `,
       data.tituloMovimentacao,
       data.valorMovimentacao,
       data.descricaoMovimentacao? data.descricaoMovimentacao : null,
       data.dataMovimentacao,
       1,
+      data.recorrente? 1:0,
+      data.categoria,
       null,
-    )
+      id
+    );
+    router.back()
   }
 
   return (
     <ScreenWrapper>
       <View style={{ flex: 1, paddingInline: 15, paddingBlock: 15 }}>
-        <HeaderVoltar titulo={!id? "Gerando Ganho" : "Editar Ganho"} />
+        <HeaderVoltar titulo={!id? "Gerar Ganho" : "Editar Ganho"} />
 
         <View style={styleContainer.conteudoPagina}>
           <View style={styleContainer.containerDadosPrincipais}>
@@ -177,7 +196,6 @@ export default function GerandoGanho() {
               name="valorMovimentacao"
               label="Valor"
               clearErrors={clearErrors}
-              keyboardType="numeric"
               type="real"
               placeholder="Valor"
               error={errors.valorMovimentacao?.message}
@@ -192,14 +210,18 @@ export default function GerandoGanho() {
             />
 
             <InputCheckbox
+            control={control}
+            name="recorrente"
             label="Recorrente"
             size={30}
             />
 
-            <InputCheckbox
+            {/* <InputCheckbox
+            control={control}
+            name="recebido"
             label="Recebido"
             size={30}
-            />
+            /> */}
 
             <InputSelect
             control={control}
@@ -217,7 +239,9 @@ export default function GerandoGanho() {
             <ButtonComponent
               label={!id? "Salvar":"Editar"}
               variant="green"
-              onPress={() => handleSubmit(salvarMovimentacao)}
+              onPress={() => {
+                !id? handleSubmit(salvarMovimentacao)():handleSubmit(editarMovimentacao, (err) => console.log(err))()
+              }}
             />
           </View>
         </View>
@@ -227,16 +251,10 @@ export default function GerandoGanho() {
 }
 
 const styleContainer = StyleSheet.create({
-  tituloPagina: {
-    fontSize: 27,
-    fontWeight: "600",
-    paddingInline: 7,
-    paddingBlock: 8,
-  },
-
   conteudoPagina: {
     flex: 1,
     justifyContent: "space-between",
+    paddingTop: 15
   },
 
   containerDadosPrincipais: {
@@ -244,6 +262,7 @@ const styleContainer = StyleSheet.create({
   },
 
   botaoSalvar: {
-    // alignSelf: 'flex-end',
+    paddingTop: 35,
+    paddingBottom: 15,
   },
 });

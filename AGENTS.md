@@ -2,7 +2,6 @@
 
 Projeto no Expo SDK 58. Antes de escrever código, consultar <https://docs.expo.dev/versions/v58.0.0/>
 Instalar libs sempre com `npx expo install <lib>` (nunca `npm install` direto).
-O `.npmrc` tem `legacy-peer-deps=true` de propósito (conflito do datetimepicker com react-native-windows).
 
 # Banco (expo-sqlite)
 
@@ -16,6 +15,11 @@ Migrations em src/database/migrations/, controladas pelo PRAGMA user_version (po
 - Código, nomes e commits em português.
 - Nomes de listas/tabelas no plural (ex: listaCategorias, categorias).
 - Formulários com react-hook-form + zod.
+
+# README
+
+Ao fazer um commit ou push, se a mudança for relevante para o README.md (funcionalidade nova ou concluída, lib nova, mudança em como rodar o projeto, estrutura ou banco), atualizar o README no mesmo commit.
+Mudanças pequenas (ajuste de estilo, refatoração, correção interna) não precisam entrar.
 
 # Ambiente
 

@@ -3,6 +3,7 @@ import { ScreenWrapper } from "@/components/ScreenWrapper";
 import { colors } from "@/theme/colors";
 import { fonts } from "@/theme/typography";
 import FontAwesome6 from "@expo/vector-icons/FontAwesome6";
+import Feather from '@expo/vector-icons/Feather';
 import { BottomSheetBackdrop, BottomSheetBackdropProps, BottomSheetModal, BottomSheetView } from "@gorhom/bottom-sheet";
 import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite";
@@ -18,7 +19,8 @@ type Movimentacoes = {
     data_emitida: string;
     categoria: number | null;
     recorrente: number;
-    qtd_parcelas: number;
+    parcelas_pagas: number;
+    parcelas_restantes: number;
     status_movimentacao: string;
     tipo_movimentacao: number;
     icone: string | null;
@@ -37,7 +39,7 @@ type localSearch = {
 
 export default function VerMovimentoDetalhado() {
     const sheetRef = useRef<BottomSheetModal>(null)
-    const snapPoints = useMemo(() => ["24.5%"], [])
+    const snapPoints = useMemo(() => ["33.4%"], [])
     const renderBackdrop = useCallback(
         (props: BottomSheetBackdropProps) => (
             <BottomSheetBackdrop
@@ -62,21 +64,22 @@ export default function VerMovimentoDetalhado() {
             async function verMovimento() {
                 const movimento = await db.getFirstAsync<Movimentacoes>(`
                     SELECT
-                        id,
-                        titulo,
-                        valor,
-                        descricao,
-                        data_emitida,
-                        categoria,
-                        recorrente,
-                        qtd_parcelas,
-                        status_movimentacao,
-                        tipo_movimentacao,
-                        icone
-                    FROM movimentacoes
-                    WHERE id = ?
+                        m.id,
+                        m.titulo,
+                        m.valor,
+                        m.descricao,
+                        m.data_emitida,
+                        m.categoria,
+                        m.recorrente,
+                        mp.parcelas_pagas,
+                        mp.parcelas_restantes,
+                        m.status_movimentacao,
+                        m.tipo_movimentacao,
+                        m.icone
+                    FROM movimentacoes m
+                    LEFT JOIN movimentoParcelado mp on m.id = mp.id_movimentacao
+                    WHERE m.id = ?
                     `, [id]);
-
                 setDadosMovimento(movimento);
             }
             verMovimento();
@@ -84,7 +87,6 @@ export default function VerMovimentoDetalhado() {
     )
 
     async function excluirMovimento(id: number) {
-        console.log('eae')
         await db.runAsync(
             `
             DELETE FROM movimentacoes
@@ -95,6 +97,21 @@ export default function VerMovimentoDetalhado() {
         .then(() => {
             sheetRef.current?.dismiss()
             router.back()
+        })
+        .catch((err) => console.log(err))
+    }
+
+    async function marcarComoPago(id: number) {
+        await db.runAsync(
+            `
+            UPDATE movimentoParcelado
+            SET parcelas_pagas = parcelas_pagas + 1
+            WHERE id_movimentacao = ? and parcelas_pagas < parcelas_restantes
+            `,
+            id
+        )
+        .then(() => {
+            sheetRef.current?.dismiss()
         })
         .catch((err) => console.log(err))
     }
@@ -118,7 +135,7 @@ export default function VerMovimentoDetalhado() {
                 </Text>
             </View>
 
-            <View style={[styleContainer.valorMovimentacao, {backgroundColor: dadosMovimento.tipo_movimentacao == 1? colors.greenSoft : colors.redSoft}]}>
+            <View style={[styleContainer.valorMovimentacao, {backgroundColor: dadosMovimento.tipo_movimentacao == 1? colors.greenSoft : colors.redSoft, borderColor: dadosMovimento.tipo_movimentacao == 1 ? colors.greenLine:colors.redLine}]}>
                 <Text style={[styleContainer.valorMovimentacaoText, {color: dadosMovimento.tipo_movimentacao == 1 ? colors.green : colors.red}]}>
                     R$ {dadosMovimento.valor.toLocaleString("pt-BR", {minimumFractionDigits: 2, maximumFractionDigits: 2})}
                 </Text>
@@ -136,7 +153,7 @@ export default function VerMovimentoDetalhado() {
                     Data
                 </Text>
                 <Text style={styleContainer.valorCard}>
-                    {dadosMovimento.data_emitida}
+                    {new Date(dadosMovimento.data_emitida).toLocaleDateString('pt-BR')}
                 </Text>
             </View>
 
@@ -155,16 +172,24 @@ export default function VerMovimentoDetalhado() {
             </View>
 
             <View style={[styleContainer.innerContainerBloco, {width: '100%'}]}>
-                <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
-                    <Text style={styleContainer.descCard}>
-                        Parcelas
-                    </Text>
+                <View>
                     {
-                        dadosMovimento.qtd_parcelas || 0 > 0? (
-                        <View>
-                            <Text style={styleContainer.descCard}>
-                                numero parcelas
-                            </Text>
+                        dadosMovimento.parcelas_restantes || 0 > 0? (
+                        <View style={{gap: 16}}>
+                            <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+                                <Text style={styleContainer.descCard}>
+                                    Parcelas
+                                </Text>
+                                <Text style={styleContainer.descCard}>
+                                    {dadosMovimento.parcelas_pagas} de {dadosMovimento.parcelas_restantes} Pagas
+                                </Text>
+                            </View>
+
+                            <View>
+                                <View style={styleContainer.barraFaltanteStatusParcela}>
+                                <View style={[styleContainer.barraPreenchidaStatusParcela, {width: String(dadosMovimento.parcelas_pagas*100/dadosMovimento.parcelas_restantes) + '%'}]}/>
+                                </View>
+                            </View>
                         </View>
                         ):(
                         <View>
@@ -175,8 +200,45 @@ export default function VerMovimentoDetalhado() {
                         )
                     }
                 </View>
-
             </View>
+            {/* {
+                dadosMovimento.parcelas_restantes || 0 > 0? (
+                <>
+                <View style={[styleContainer.innerContainerBloco]}>
+                    <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+                        <Text style={styleContainer.descCard}>
+                            Parcelas Pagas
+                        </Text>
+                    </View>
+
+                    <View>
+                        <Text style={[styleContainer.valorCard, {fontSize: 18}]}>
+                            {dadosMovimento.parcelas_pagas}
+                        </Text>
+                    </View>
+                </View>
+                <View style={[styleContainer.innerContainerBloco]}>
+                    <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
+                        <Text style={styleContainer.descCard}>
+                            Parcelas Restantes
+                        </Text>
+                    </View>
+
+                    <View>
+                        <Text style={[styleContainer.valorCard, {fontSize: 18}]}>
+                            {dadosMovimento.parcelas_restantes}
+                        </Text>
+                    </View>
+                </View>
+                </>
+                ):(
+                <View>
+                    <Text style={styleContainer.descCard}>
+                        Não há parcelas
+                    </Text>
+                </View>
+                )
+            } */}
 
             {
                 dadosMovimento.descricao?
@@ -218,7 +280,17 @@ export default function VerMovimentoDetalhado() {
             >
                 <BottomSheetView style={{paddingInline: 24,paddingBottom: 45, paddingTop: 20, gap: 35}}>
                     <Pressable style={styleContainer.btOpcoes} onPress={() => {
+                    marcarComoPago(dadosMovimento.id)
+                    }}>
+                        <View style={[styleContainer.iconOpcoes, {backgroundColor: colors.greenSoft}]}>
+                            <Feather name="check-square" size={width * 0.05} color={colors.green} />
+                        </View>
+                        <Text style={[styleContainer.textoOpcoes, {color: colors.text}]}>
+                            Marcar como Pago
+                        </Text>
+                    </Pressable>
 
+                    <Pressable style={styleContainer.btOpcoes} onPress={() => {
                         router.push({
                         pathname: dadosMovimento.tipo_movimentacao == 1? '/(gerando_ganho)/gerandoGanho' : '/(gerando_gasto)/gerandoGasto',
                         params: {
@@ -283,7 +355,6 @@ const styleContainer = StyleSheet.create({
         paddingInline: 17,
         paddingBlock: 18,
         borderWidth: 1.5,
-        borderColor: colors.greenLine,
         marginBlock: 10
     },
 
@@ -331,5 +402,17 @@ const styleContainer = StyleSheet.create({
     iconOpcoes: {
         padding: 10,
         borderRadius: 8
+    },
+
+
+    barraFaltanteStatusParcela: {
+        backgroundColor: colors.surface,
+        height: 9,
+        borderRadius: 20
+    },
+    barraPreenchidaStatusParcela: {
+        backgroundColor: colors.purple,
+        height: '100%',
+        borderRadius: 20
     }
 })

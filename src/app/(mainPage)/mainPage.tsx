@@ -136,7 +136,7 @@ export default function MainPage() {
 
                         {dado.data_emitida && (
                           <Text style={styleContainer.textConteudoDate}>
-                            {dado.data_emitida}
+                            {new Date(dado.data_emitida).toLocaleDateString('pt-BR')}
                           </Text>
                         )}
                       </View>
@@ -195,9 +195,14 @@ export default function MainPage() {
               {dadosMovimentacoes.map((dado) => {
                 if (dado.tipo_movimentacao == 2)
                   return (
-                    <Pressable onPress={() => console.log('pressionado')}>
+                    <Pressable onPress={() => router.push({
+                      pathname: '/(detalhe_movimento)/verMovimentoDetalhado',
+                      params: {
+                              id: dado.id
+                              }
+                      })}
+                      key={dado.id}>
                     <View
-                      key={dado.id}
                       style={styleContainer.containerConteudoOut}
                     >
                       <View style={styleContainer.iconMovimentacaoGasto}>
@@ -219,7 +224,7 @@ export default function MainPage() {
 
                         {dado.data_emitida && (
                           <Text style={styleContainer.textConteudoDate}>
-                            {dado.data_emitida}
+                            {new Date(dado.data_emitida).toLocaleDateString('pt-BR')}
                           </Text>
                         )}
                       </View>
@@ -236,10 +241,10 @@ export default function MainPage() {
         </View>
       </View>
       
-      <ButtonComponent
+      {/* <ButtonComponent
         label="ver banco"
         onPress={() => console.log("movimentações: ", dadosMovimentacoes)}
-      />
+      /> */}
      
       <ButtonComponent label="deletar table" onPress={resetarBanco} /> 
       <ActionMovimentacao />
