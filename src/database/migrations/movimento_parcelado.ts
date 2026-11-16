@@ -5,7 +5,7 @@ export async function movimentoParcelado(db: SQLiteDatabase){
     await db.execAsync(`
         CREATE TABLE IF NOT EXISTS movimentoParcelado (
             id INTEGER PRIMARY KEY AUTOINCREMENT
-            ,id_movimentacao INTEGER NOT NULL
+            ,id_movimentacao INTEGER NOT NULL UNIQUE
             ,parcelas_pagas INTEGER NOT NULL
             ,parcelas_restantes INTEGER NOT NULL
 
