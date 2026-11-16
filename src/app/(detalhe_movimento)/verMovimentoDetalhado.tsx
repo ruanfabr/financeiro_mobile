@@ -37,6 +37,7 @@ type localSearch = {
 }
 
 export default function VerMovimentoDetalhado() {
+    console.log('aaaaaa')
     const sheetRef = useRef<BottomSheetModal>(null)
     const snapPoints = useMemo(() => ["24.5%"], [])
     const renderBackdrop = useCallback(
@@ -76,7 +77,7 @@ export default function VerMovimentoDetalhado() {
                         m.tipo_movimentacao,
                         m.icone
                     FROM movimentacoes m
-                    JOIN movimentoParcelado mp on m.id = mp.id_movimentacao
+                    LEFT JOIN movimentoParcelado mp on m.id = mp.id_movimentacao
                     WHERE m.id = ?
                     `, [id]);
 
