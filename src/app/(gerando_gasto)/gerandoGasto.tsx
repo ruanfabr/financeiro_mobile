@@ -30,6 +30,7 @@ const movimentoGastoSchema = z.object({
   recorrente: z.number(),
   parcela: z.number(),
   parcelas_restantes: z.number(),
+  parcelas_pagas: z.number(),
   categoria: z.number(),
   valor_parcela: z.number()
 });
@@ -46,6 +47,7 @@ type Movimentacoes = {
     tipo_movimentacao: number;
     icone: string | null;
     parcelas_restantes: number | null;
+    parcelas_pagas: number | null;
     valor_parcela: number | null;
 }
 
@@ -73,6 +75,7 @@ export default function GerandoGasto() {
     defaultValues: {
       dataMovimentacao: String(new Date().toISOString().split('T')[0]),
       parcelas_restantes: 0,
+      parcelas_pagas: 0,
       parcela: 0,
       recorrente: 0,
     }
@@ -95,7 +98,9 @@ export default function GerandoGasto() {
               m.status_movimentacao,
               m.tipo_movimentacao,
               m.icone,
-              mp.parcelas_restantes
+              mp.parcelas_restantes,
+              mp.parcelas_pagas,
+              mp.valor_parcela
           FROM movimentacoes m
           left join movimentoParcelado mp on m.id = mp.id_movimentacao
           WHERE m.id = ?
@@ -110,8 +115,10 @@ export default function GerandoGasto() {
           categoria: movimento?.categoria ?? undefined,
           recorrente: movimento?.recorrente,
           valorMovimentacao: movimento?.valor,
+          valor_parcela: movimento?.valor_parcela ?? undefined,
           parcela: movimento?.parcelas_restantes && movimento.parcelas_restantes > 0? 1:0,
-          parcelas_restantes: movimento?.parcelas_restantes ?? undefined
+          parcelas_restantes: movimento?.parcelas_restantes ?? undefined,
+          parcelas_pagas: movimento?.parcelas_pagas ?? undefined
         })
       }
       verMovimentoGasto()
@@ -160,7 +167,7 @@ export default function GerandoGasto() {
           `,
           res.lastInsertRowId,
           data.valor_parcela,
-          0,
+          data.parcelas_pagas,
           data.parcelas_restantes
         )
       }
@@ -204,12 +211,13 @@ export default function GerandoGasto() {
             values
             (?, ?, ?, ?)
             ON CONFLICT(id_movimentacao) DO UPDATE SET
-            parcelas_restantes = excluded.parcelas_restantes
+            parcelas_restantes = excluded.parcelas_restantes,
+            parcelas_pagas = excluded.parcelas_pagas,
             valor_parcela = excluded.valor_parcela
             `,
             id,
             data.valor_parcela,
-            0,
+            data.parcelas_pagas,
             data.parcelas_restantes
           )
         console.log('edit movimento parcelado')
@@ -294,16 +302,23 @@ export default function GerandoGasto() {
               <>
               <InputText
               control={control}
-              name="parcelas_restantes"
-              label="Número de parcela"
+              name="valor_parcela"
+              label="Valor da Parcela"
+              type="real"
+              />
+
+              <InputText
+              control={control}
+              name="parcelas_pagas"
+              label="Número de Parcelas Pagas"
               type="number"
               />
 
               <InputText
               control={control}
-              name="valor_parcela"
-              label="Valor da Parcela"
-              type="real"
+              name="parcelas_restantes"
+              label="Número de Parcelas Restantes"
+              type="number"
               />
               </>
               : null
