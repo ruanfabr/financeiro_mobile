@@ -136,7 +136,7 @@ export default function MainPage() {
 
                         {dado.data_emitida && (
                           <Text style={styleContainer.textConteudoDate}>
-                            {dado.data_emitida}
+                            {new Date(dado.data_emitida).toLocaleDateString('pt-BR')}
                           </Text>
                         )}
                       </View>
@@ -224,7 +224,7 @@ export default function MainPage() {
 
                         {dado.data_emitida && (
                           <Text style={styleContainer.textConteudoDate}>
-                            {dado.data_emitida}
+                            {new Date(dado.data_emitida).toLocaleDateString('pt-BR')}
                           </Text>
                         )}
                       </View>

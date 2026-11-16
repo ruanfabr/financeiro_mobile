@@ -31,6 +31,7 @@ const movimentoGastoSchema = z.object({
   parcela: z.number(),
   parcelas_restantes: z.number(),
   categoria: z.number(),
+  valor_parcela: z.number()
 });
 
 type Movimentacoes = {
@@ -45,6 +46,7 @@ type Movimentacoes = {
     tipo_movimentacao: number;
     icone: string | null;
     parcelas_restantes: number | null;
+    valor_parcela: number | null;
 }
 
 type movimentoGastoFormData = z.infer<typeof movimentoGastoSchema>;
@@ -193,6 +195,7 @@ export default function GerandoGasto() {
           `
           INSERT INTO movimentoParcelado (
             id_movimentacao
+            ,valor_parcela
             ,parcelas_pagas
             ,parcelas_restantes
             )
@@ -284,12 +287,21 @@ export default function GerandoGasto() {
 
             {
               watch("parcela") == 1?
+              <>
               <InputText
               control={control}
               name="parcelas_restantes"
               label="Número de parcela"
               type="number"
               />
+
+              <InputText
+              control={control}
+              name="valor_parcela"
+              label="Valor da Parcela"
+              type="real"
+              />
+              </>
               : null
             }
 

@@ -11,6 +11,7 @@ App mobile de organização financeira pessoal: registrar ganhos e gastos, acomp
 - [x] Tela de detalhe da movimentação
 - [x] Excluir movimentação
 - [x] Editar movimentação (ganho e gasto)
+- [x] Acompanhar parcelas (barra de progresso e marcar parcela como paga)
 - [ ] Telas de "ver mais" para ganhos e gastos
 - [ ] Gerenciamento de categorias
 - [ ] Login
