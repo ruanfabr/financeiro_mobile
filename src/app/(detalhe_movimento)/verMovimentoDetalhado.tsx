@@ -218,45 +218,6 @@ export default function VerMovimentoDetalhado() {
                     }
                 </View>
             </View>
-            {/* {
-                dadosMovimento.parcelas_restantes || 0 > 0? (
-                <>
-                <View style={[styleContainer.innerContainerBloco]}>
-                    <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
-                        <Text style={styleContainer.descCard}>
-                            Parcelas Pagas
-                        </Text>
-                    </View>
-
-                    <View>
-                        <Text style={[styleContainer.valorCard, {fontSize: 18}]}>
-                            {dadosMovimento.parcelas_pagas}
-                        </Text>
-                    </View>
-                </View>
-                <View style={[styleContainer.innerContainerBloco]}>
-                    <View style={{flexDirection: "row", justifyContent: "space-between", alignItems: "center"}}>
-                        <Text style={styleContainer.descCard}>
-                            Parcelas Restantes
-                        </Text>
-                    </View>
-
-                    <View>
-                        <Text style={[styleContainer.valorCard, {fontSize: 18}]}>
-                            {dadosMovimento.parcelas_restantes}
-                        </Text>
-                    </View>
-                </View>
-                </>
-                ):(
-                <View>
-                    <Text style={styleContainer.descCard}>
-                        Não há parcelas
-                    </Text>
-                </View>
-                )
-            } */}
-
             {
                 dadosMovimento.descricao?
 
