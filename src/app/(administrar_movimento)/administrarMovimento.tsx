@@ -30,9 +30,32 @@ const movimentoGastoSchema = z.object({
   recorrente: z.number(),
   categoria: z.number(),
   parcela: z.number(),
-  parcelas_restantes: z.number(),
-  parcelas_pagas: z.number(),
-  valor_parcela: z.number()
+  parcelas_restantes: z.number().nullable().optional(),
+  parcelas_pagas: z.number().nullable().optional(),
+  valor_parcela: z.number().nullable().optional()
+}).superRefine((data, err) => {
+  const arrayCampos = ["parcelas_pagas", "parcelas_restantes", "valor_parcela"] as const
+  if (data.parcela == 1 && (data.parcelas_pagas == null || data.parcelas_restantes == null || data.valor_parcela == null)){
+    arrayCampos.forEach((item) => {
+      if (data[item] == undefined) {
+          return err.addIssue({
+            code: "custom",
+            message: "Campo não pode estar vazio",
+            path: [item]
+          })
+      }
+    })
+  }
+  // else if(data.parcela == 1  && ((data.parcelas_pagas != null && data.parcelas_pagas < 0) || (data.parcelas_restantes != null && data.parcelas_restantes <= 0) || (data.valor_parcela != null && data.valor_parcela <= 0))){
+  //   arrayCampos.forEach((item) => {
+  //     if ((item == "parcelas_pagas" && (data.parcelas_pagas && data.parcelas_pagas < 0)) || data[item] && data[item] <= 0 && ((item == "parcelas_restantes" || item == "valor_parcela")))
+  //     return err.addIssue({
+  //       code: "custom",
+  //       message: "Valor inválido",
+  //       path: [item]
+  //     })
+  //   })
+  // }
 });
 
 type Movimentacoes = {
@@ -75,8 +98,9 @@ export default function GerandoGasto() {
     reValidateMode: "onSubmit",
     defaultValues: {
       dataMovimentacao: String(new Date().toISOString().split('T')[0]),
-      parcelas_restantes: 0,
-      parcelas_pagas: 0,
+      // valor_parcela: 0,
+      // parcelas_restantes: 0,
+      // parcelas_pagas: 0,
       parcela: 0,
       recorrente: 0,
     }
@@ -132,6 +156,7 @@ export default function GerandoGasto() {
   )
 
   async function salvarMovimentacao(data: movimentoGastoFormData) {
+    console.log('salva')
     await db.runAsync(
       `
             INSERT INTO movimentacoes (
@@ -159,7 +184,9 @@ export default function GerandoGasto() {
       null,
     )
     .then(async (res) => {
-      if (data.parcela == 1 && data.parcelas_restantes > 0){
+      console.log(data.parcela)
+
+      if (data.parcela == 1 && data.parcelas_restantes && data.parcelas_restantes > 0){
         await db.runAsync(
           `
           INSERT INTO movimentoParcelado (
@@ -172,9 +199,9 @@ export default function GerandoGasto() {
           (?, ?, ?, ?)
           `,
           res.lastInsertRowId,
-          data.valor_parcela,
-          data.parcelas_pagas,
-          data.parcelas_restantes
+          data.valor_parcela?? null,
+          data.parcelas_pagas?? null,
+          data.parcelas_restantes?? null
         )
       }
       router.back()
@@ -205,6 +232,7 @@ export default function GerandoGasto() {
       null,
       id?? null
     ).then(async () => {
+      console.log(data.parcela)
       if (data.parcela == 1){
         await db.runAsync(
           `
@@ -222,9 +250,9 @@ export default function GerandoGasto() {
             valor_parcela = excluded.valor_parcela
             `,
             id?? null,
-            data.valor_parcela,
-            data.parcelas_pagas,
-            data.parcelas_restantes
+            data.valor_parcela?? null,
+            data.parcelas_pagas?? null,
+            data.parcelas_restantes?? null
           )
         console.log('edit movimento parcelado')
       }
@@ -312,6 +340,8 @@ export default function GerandoGasto() {
               label="Valor da Parcela"
               placeholder="Valor da Parcela"
               type="real"
+              clearErrors={clearErrors}
+              error={errors.valor_parcela?.message}
               />
 
               <InputText
@@ -320,6 +350,8 @@ export default function GerandoGasto() {
               label="Número de Parcelas Pagas"
               placeholder="Parcelas Pagas"
               type="number"
+              clearErrors={clearErrors}
+              error={errors.parcelas_pagas?.message}
               />
 
               <InputText
@@ -328,6 +360,8 @@ export default function GerandoGasto() {
               label="Número de Parcelas Restantes"
               placeholder="Parcelas Restantes"
               type="number"
+              clearErrors={clearErrors}
+              error={errors.parcelas_restantes?.message}
               />
               </>
               : null
