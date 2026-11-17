@@ -172,7 +172,7 @@ export default function MainPage() {
             dadosMovimentacoes.find(
               (elemento) => elemento.tipo_movimentacao === 1,
             ) ? (
-              <Link href="/" style={styleContainer.textVerMaisGanho}>
+              <Link href="/" style={[styleContainer.textVerMais, {color: colors.green}]}>
                 Ver Mais
               </Link>
             ) : null}
@@ -185,8 +185,7 @@ export default function MainPage() {
                 <Text
                   style={[
                     styleContainer.textTitle,
-                    { 
-                      // color: "#c71100",
+                    {
                       paddingInline: 13
                     },
                   ]}
@@ -247,7 +246,7 @@ export default function MainPage() {
                               </Text>
                             )}
 
-                            {dado.parcelas_restantes != 0?
+                            {dado.parcelas_restantes && dado.parcelas_restantes != 0?
                               <Text style={[styleContainer.textConteudoDesc]}>
                                 {dado.parcelas_pagas} de {dado.parcelas_restantes}
                               </Text>
@@ -269,6 +268,14 @@ export default function MainPage() {
                   );
               })}
             </View>
+                        {dadosMovimentacoes &&
+            dadosMovimentacoes.find(
+              (elemento) => elemento.tipo_movimentacao === 2,
+            ) ? (
+              <Link href="/" style={[styleContainer.textVerMais, {color: colors.red}]}>
+                Ver Mais
+              </Link>
+            ) : null}
           </View>
         </View>
       </View>
@@ -389,7 +396,7 @@ const styleContainer = StyleSheet.create({
     alignSelf: "center",
     flexShrink: 0,
   },
-  textVerMaisGanho: {
+  textVerMais: {
     fontFamily: fonts.bodyBold,
     fontSize: 13,
     justifyContent: "center",
@@ -397,6 +404,5 @@ const styleContainer = StyleSheet.create({
     borderTopWidth: 1,
     borderColor: colors.border,
     paddingTop: 10,
-    color: colors.green,
-  },
+  }
 });
