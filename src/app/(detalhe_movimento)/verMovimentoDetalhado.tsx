@@ -41,7 +41,7 @@ type localSearch = {
 export default function VerMovimentoDetalhado() {
     const [movimentoPago, setMovimentoPago] = useState(0)
     const sheetRef = useRef<BottomSheetModal>(null)
-    const snapPoints = useMemo(() => ["33.4%"], [])
+    const snapPoints = useMemo(() => ["24.4%"], [])
     const renderBackdrop = useCallback(
         (props: BottomSheetBackdropProps) => (
             <BottomSheetBackdrop
@@ -117,6 +117,20 @@ export default function VerMovimentoDetalhado() {
             sheetRef.current?.dismiss()
         })
         .catch((err) => console.log(err))
+    }
+
+    async function retirarPagamento(id: number) {
+        await db.runAsync(
+            `
+            UPDATE movimentoParcelado
+            set parcelas_pagas = parcelas_pagas - 1
+            WHERE id_movimentacao = ? and parcelas_pagas > 0
+            `,
+            id
+        )
+        .then(() => {
+            setMovimentoPago(movimentoPago - 1)
+        })
     }
 
     if (dadosMovimento)
@@ -267,7 +281,16 @@ export default function VerMovimentoDetalhado() {
             <ButtonComponent
             label="Marcar como Pago"
             variant="green"
+            onPress={() => {marcarComoPago(dadosMovimento.id)}}
             />
+            {
+            dadosMovimento.parcelas_pagas && dadosMovimento.parcelas_pagas > 0?
+                <ButtonComponent
+                label="Retirar Pago"
+                variant="red"
+                onPress={() => {retirarPagamento(dadosMovimento.id)}}
+                />
+            :null}
         </View>
 
         {upModal()}
@@ -289,7 +312,7 @@ export default function VerMovimentoDetalhado() {
         width: 40}}
             >
                 <BottomSheetView style={{paddingInline: 24,paddingBottom: 45, paddingTop: 20, gap: 35}}>
-                    <Pressable style={styleContainer.btOpcoes} onPress={() => {
+                    {/* <Pressable style={styleContainer.btOpcoes} onPress={() => {
                     marcarComoPago(dadosMovimento.id)
                     }}>
                         <View style={[styleContainer.iconOpcoes, {backgroundColor: colors.greenSoft}]}>
@@ -298,7 +321,7 @@ export default function VerMovimentoDetalhado() {
                         <Text style={[styleContainer.textoOpcoes, {color: colors.text}]}>
                             Marcar como Pago
                         </Text>
-                    </Pressable>
+                    </Pressable> */}
 
                     <Pressable style={styleContainer.btOpcoes} onPress={() => {
                         router.push({
@@ -432,6 +455,7 @@ const styleContainer = StyleSheet.create({
     marginBlock: 'auto',
     paddingTop: 35,
     paddingBottom: 15,
-    paddingInline: 20
+    paddingInline: 20,
+    gap: 25
     }
 })
