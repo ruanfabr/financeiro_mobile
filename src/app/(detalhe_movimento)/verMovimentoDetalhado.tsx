@@ -302,9 +302,10 @@ export default function VerMovimentoDetalhado() {
 
                     <Pressable style={styleContainer.btOpcoes} onPress={() => {
                         router.push({
-                        pathname: dadosMovimento.tipo_movimentacao == 1? '/(gerando_ganho)/gerandoGanho' : '/(gerando_gasto)/gerandoGasto',
+                        pathname: '/(administrar_movimento)/administrarMovimento',
                         params: {
-                            id: dadosMovimento.id
+                            id: dadosMovimento.id,
+                            tipoMovimentacaoURL: dadosMovimento.tipo_movimentacao == 1? "Ganho":"Gasto"
                         }
                         })
                         sheetRef.current?.dismiss()
