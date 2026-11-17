@@ -28,8 +28,12 @@ const movimentoGanhoSchema = z.object({
   // dataMovimentacao: z.date()
   dataMovimentacao: z.string().min(1, "Selecionar uma data"), // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
   recorrente: z.number(),
-  // recebido: z.boolean().default(true),
   categoria: z.number(),
+  parcela: z.number(),
+  parcelas_restantes: z.number(),
+  parcelas_pagas: z.number(),
+  valor_parcela: z.number()
+  // recebido: z.boolean().default(true),
 });
 
 type movimentoGanhoFormData = z.infer<typeof movimentoGanhoSchema>;
@@ -42,10 +46,12 @@ type Movimentacoes = {
     data_emitida: string;
     categoria: number | null;
     recorrente: number;
-    parcelas_restantes: number;
     status_movimentacao: string;
     tipo_movimentacao: number;
     icone: string | null;
+    parcelas_restantes: number | null;
+    parcelas_pagas: number | null;
+    valor_parcela: number | null;
 }
 
 type localSearch = {
@@ -62,6 +68,7 @@ export default function GerandoGanho() {
     clearErrors,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<movimentoGanhoFormData>({
     resolver: zodResolver(movimentoGanhoSchema),
@@ -135,8 +142,29 @@ export default function GerandoGanho() {
       data.recorrente? 1 : 0,
       data.categoria,
       null,
-    );
-    router.back()
+    )
+    .then(async (res) => {
+      if (data.parcela == 1 && data.parcelas_restantes > 0){
+        await db.runAsync(
+          `
+          INSERT INTO movimentoParcelado (
+            id_movimentacao
+            ,valor_parcela
+            ,parcelas_pagas
+            ,parcelas_restantes
+          )
+            values
+          (?, ?, ?, ?)
+          `,
+          res.lastInsertRowId,
+          data.valor_parcela,
+          data.parcelas_pagas,
+          data.parcelas_restantes
+        )
+      }
+      router.back()
+    })
+    .catch((err) => { console.log(err) })
   }
 
   async function editarMovimentacao(data: movimentoGanhoFormData) {
@@ -222,6 +250,44 @@ export default function GerandoGanho() {
             label="Recebido"
             size={30}
             /> */}
+
+            <InputCheckbox
+            control={control}
+            name="parcela"
+            label="parcela"
+            size={30}
+            />
+
+            {
+              watch("parcela") == 1?
+              <>
+              <InputText
+              control={control}
+              name="valor_parcela"
+              label="Valor da Parcela"
+              placeholder="Valor da Parcela"
+              type="real"
+              />
+
+              <InputText
+              control={control}
+              name="parcelas_pagas"
+              label="Número de Parcelas Pagas"
+              placeholder="Parcelas Pagas"
+              type="number"
+              />
+
+              <InputText
+              control={control}
+              name="parcelas_restantes"
+              label="Número de Parcelas Restantes"
+              placeholder="Parcelas Restantes"
+              type="number"
+              />
+              </>
+              : null
+            }
+
 
             <InputSelect
             control={control}

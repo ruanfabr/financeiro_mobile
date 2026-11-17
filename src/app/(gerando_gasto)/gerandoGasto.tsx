@@ -28,10 +28,10 @@ const movimentoGastoSchema = z.object({
   // dataMovimentacao: z.date()
   dataMovimentacao: z.string(), // PARA VIÉS DE TESTE, DESABILITAR DEPOIS
   recorrente: z.number(),
+  categoria: z.number(),
   parcela: z.number(),
   parcelas_restantes: z.number(),
   parcelas_pagas: z.number(),
-  categoria: z.number(),
   valor_parcela: z.number()
 });
 
@@ -304,6 +304,7 @@ export default function GerandoGasto() {
               control={control}
               name="valor_parcela"
               label="Valor da Parcela"
+              placeholder="Valor da Parcela"
               type="real"
               />
 
@@ -311,6 +312,7 @@ export default function GerandoGasto() {
               control={control}
               name="parcelas_pagas"
               label="Número de Parcelas Pagas"
+              placeholder="Parcelas Pagas"
               type="number"
               />
 
@@ -318,6 +320,7 @@ export default function GerandoGasto() {
               control={control}
               name="parcelas_restantes"
               label="Número de Parcelas Restantes"
+              placeholder="Parcelas Restantes"
               type="number"
               />
               </>
