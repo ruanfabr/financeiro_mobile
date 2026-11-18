@@ -23,10 +23,13 @@ export function ActionMovimentacao(){
         progress.value = withTiming(!actionAberto ? 1 : 0, { duration: 200 });
     }
     
-    const pushRota = (rota: '/gerandoGanho' | '/gerandoGasto' | '/categorias' ) => {
+    const pushRota = (rota: '/administrarMovimento' | '/categorias', tipoMovimentacao: string | null = null ) => {
         setActionAberto(false)
         progress.value = 0
-        router.push(rota)
+        router.push({
+            pathname: rota,
+            params: {tipoMovimentacaoURL:tipoMovimentacao}
+        })
     }
 
     const estiloOpcoes = useAnimatedStyle(() => ({
@@ -45,14 +48,14 @@ export function ActionMovimentacao(){
         <View style={styleContainer.containerPrincipal}>
             <Animated.View style={[styleContainer.opcoes, estiloOpcoes]} pointerEvents={actionAberto ? "auto" : "none"}>
                 <Pressable
-                onPress={() => pushRota('/gerandoGanho')}
+                onPress={() => pushRota('/administrarMovimento', "Ganho")}
                 style={[styleContainer.opcaoBotao, {backgroundColor:colors.green}]}
                 >
                     <Text style={[styleContainer.textOpcoes, {fontSize: width * 0.043}]}>Gerar Ganho</Text>
                 </Pressable>
 
                 <Pressable
-                onPress={() => {pushRota('/gerandoGasto')}}
+                onPress={() => {pushRota('/administrarMovimento', "Gasto")}}
                 style={[styleContainer.opcaoBotao, {backgroundColor:colors.red}]}
                 >
                     <Text style={[styleContainer.textOpcoes, {fontSize: width * 0.043}]}>Gerar Gasto</Text>

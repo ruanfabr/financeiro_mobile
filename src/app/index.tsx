@@ -4,7 +4,7 @@ import { ScreenWrapper } from "@/components/ScreenWrapper";
 import { colors } from "@/theme/colors";
 import { fonts } from "@/theme/typography";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Link, useRouter } from "expo-router";
+import { Link, Redirect, useRouter } from "expo-router";
 import { useForm } from "react-hook-form";
 import { ScrollView, StyleSheet, Text, View } from "react-native";
 import { z } from "zod";
@@ -35,69 +35,70 @@ export default function Index() {
   }
 
   return (
-    <ScreenWrapper>
-      <ScrollView
-        contentContainerStyle={{ flexGrow: 1 }}
-        keyboardShouldPersistTaps="handled"
-      >
-        <View style={style.viewNormal}>
-          <Text style={style.title}>Projeto de organização financeira</Text>
+    <Redirect href={"/(mainPage)/mainPage"}/>
+    // <ScreenWrapper>
+    //   <ScrollView
+    //     contentContainerStyle={{ flexGrow: 1 }}
+    //     keyboardShouldPersistTaps="handled"
+    //   >
+    //     <View style={style.viewNormal}>
+    //       <Text style={style.title}>Projeto de organização financeira</Text>
 
-          <View style={style.formularioLogin}>
-            <InputText
-              control={control}
-              name="email"
-              clearErrors={clearErrors}
-              label="E-mail"
-              autoCapitalize="none"
-              keyboardType="email-address"
-              style={style.formularioLoginCampo}
-              error={errors.email?.message}
-            />
+    //       <View style={style.formularioLogin}>
+    //         <InputText
+    //           control={control}
+    //           name="email"
+    //           clearErrors={clearErrors}
+    //           label="E-mail"
+    //           autoCapitalize="none"
+    //           keyboardType="email-address"
+    //           style={style.formularioLoginCampo}
+    //           error={errors.email?.message}
+    //         />
 
-            <InputText
-              control={control}
-              name="senha"
-              clearErrors={clearErrors}
-              label="Senha"
-              autoCapitalize="none"
-              secureTextEntry
-              style={style.formularioLoginCampo}
-              error={errors.senha?.message}
-            />
+    //         <InputText
+    //           control={control}
+    //           name="senha"
+    //           clearErrors={clearErrors}
+    //           label="Senha"
+    //           autoCapitalize="none"
+    //           secureTextEntry
+    //           style={style.formularioLoginCampo}
+    //           error={errors.senha?.message}
+    //         />
 
-            <View style={{ gap: 15 }}>
-              <ButtonComponent
-                label="Login"
-                onPress={handleSubmit(handleSignIn)}
-              />
+    //         <View style={{ gap: 15 }}>
+    //           <ButtonComponent
+    //             label="Login"
+    //             onPress={() => handleSubmit(handleSignIn)}
+    //           />
 
-              <Text style={style.textCadastro}>
-                Não possui cadastro? {"\n"}{" "}
-                <Link href="/auth/signup" style={style.linkCadastro}>
-                  Registre-se aqui
-                </Link>
-              </Text>
+    //           <Text style={style.textCadastro}>
+    //             Não possui cadastro? {"\n"}{" "}
+    //             <Link href="/auth/signup" style={style.linkCadastro}>
+    //               Registre-se aqui
+    //             </Link>
+    //           </Text>
 
-              <Text style={style.textCadastro}>
-                Pular para{" "}
-                <Link href="/gerandoGanho" style={style.linkCadastro}>
-                  pagina trabalhando atual
-                </Link>
-              </Text>
+    //           <Text style={style.textCadastro}>
+    //             Pular para{" "}
+    //             <Link href="/gerandoGanho" style={style.linkCadastro}>
+    //               pagina trabalhando atual
+    //             </Link>
+    //           </Text>
 
-              <Text style={style.textCadastro}>
-                mainPage{" "}
-                <Link href="/mainPage" style={style.linkCadastro}>
-                  {" "}
-                  aqui{" "}
-                </Link>
-              </Text>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-    </ScreenWrapper>
+    //           <Text style={style.textCadastro}>
+    //             mainPage{" "}
+    //             <Link href="/mainPage" style={style.linkCadastro}>
+    //               {" "}
+    //               aqui{" "}
+    //             </Link>
+    //           </Text>
+    //         </View>
+    //       </View>
+    //     </View>
+    //   </ScrollView>
+    // </ScreenWrapper>
   );
 }
 
