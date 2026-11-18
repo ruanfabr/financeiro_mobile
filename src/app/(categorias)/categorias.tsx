@@ -1,7 +1,7 @@
 import { HeaderVoltar } from "@/components/HeaderVoltar";
 import { ScreenWrapper } from "@/components/ScreenWrapper";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useFocusEffect } from "expo-router";
+import { useFocusEffect, useRoute, useRouter } from "expo-router";
 import { useSQLiteContext } from "expo-sqlite"
 import { useCallback, useMemo, useRef, useState } from "react"
 import { useForm } from "react-hook-form";
@@ -30,6 +30,7 @@ type Categorias = {
 type categoriaFormData = z.infer<typeof categoriaSchema>;
 
 export default function Categorias() {
+    const router = useRouter()
     const [listaCategorias, setListaCategoria] = useState<Categorias[]>([]);
     const db = useSQLiteContext();
     
@@ -74,7 +75,7 @@ export default function Categorias() {
                     `
                 )
                 console.log(dataListaCategorias)
-                setListaCategorias(dataListaCategorias)
+                setListaCategoria(dataListaCategorias)
             }
             definindoListaCategoria();
         }, [])
@@ -146,9 +147,18 @@ export default function Categorias() {
                 <BottomSheetView
                 style={{paddingInline: 24,paddingBottom: 45, paddingTop: 20, gap: 35}}
                 >
-                    <Pressable onPress={() => {console.log('oi')}}>
-                        <Text>
-                            oi
+                    <Pressable style={styleContainer.btOpcoes} onPress={() => {
+                        router.push({
+                        pathname: '/criarCategoria'
+                    })
+                    sheetRef.current?.dismiss()
+                    }}>
+                        <View style={[styleContainer.iconOpcoes, {backgroundColor: colors.purpleSoft}]}>
+                            <FontAwesome6 name="plus" size={width * 0.05} color={colors.purple}/>
+                        </View>
+
+                        <Text style={[styleContainer.textoOpcoes, {color:colors.text}]}>
+                            Criar categoria
                         </Text>
                     </Pressable>
                 </BottomSheetView>
@@ -184,5 +194,20 @@ const styleContainer = StyleSheet.create({
         position: 'absolute',
         bottom: 20,
         right: 18,
-    }
+    },
+
+
+    textoOpcoes: {
+    fontFamily: fonts.bodyBold,
+    fontSize: 17
+    },
+    btOpcoes: {
+        flexDirection: 'row',
+        alignItems: "center",
+        gap: 15
+    },
+    iconOpcoes: {
+        padding: 10,
+        borderRadius: 8
+    },
 })

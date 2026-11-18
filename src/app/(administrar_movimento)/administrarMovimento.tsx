@@ -98,9 +98,6 @@ export default function GerandoGasto() {
     reValidateMode: "onSubmit",
     defaultValues: {
       dataMovimentacao: String(new Date().toISOString().split('T')[0]),
-      // valor_parcela: 0,
-      // parcelas_restantes: 0,
-      // parcelas_pagas: 0,
       parcela: 0,
       recorrente: 0,
     }
